@@ -1,11 +1,18 @@
-// GRID OBJECTS
-class GridObj extends Obj {
+interface GridObjProps extends ObjProps {
+    tags: Array<string>;
+}
 
-    tags;
+class GridObj extends Obj implements ObjProps, Hoverable {
 
-    constructor(data, p, name, img, tags) {
-        super(data, p, name, img);
-        this.tags = tags;
+    tags: Array<string>;
+
+    constructor(props: GridObjProps) {
+        super(props);
+        this.tags = props.tags;
+    }
+
+    putOnGrid(source: Source, destination: Destination) {
+
     }
 
     draw(gx: number, gy: number, x: number, y: number) {
@@ -18,4 +25,9 @@ class GridObj extends Obj {
 
     onWatering(gx: number, gy: number) {
     }
+
+    makeCard(): Card | null {
+        return null;
+    }
+
 }

@@ -1,4 +1,12 @@
-class Obj {
+interface ObjProps {
+    id: string;
+    data: Data;
+    p: any;
+    name: string;
+    img: any;
+}
+
+class Obj implements ObjProps {
 
     id: string;
     data: Data;
@@ -6,23 +14,16 @@ class Obj {
     name: string;
     img: any;
 
-    constructor(data, p, name, img) {
-        this.data = data;
-        this.p = p;
-        this.name = name;
-        this.img = img;
+    constructor(props: ObjProps) {
+        this.id = props.id;
+        this.data = props.data;
+        this.p = props.p;
+        this.name = props.name;
+        this.img = props.img;
     }
 
     drawDescription(x: number, y: number) {
-        console.log(`${this.id}.drawDescription(${x}, ${y}) not defined.`);
-    }
-
-    onSelect(id: string) {
-        console.log(`${this.id}.onSelect(${id}) not defined.`);
-    }
-
-    onUse(source, destination) {
-        console.log(`${this.id}.onUse(${source}, ${destination}) not defined.`);
+        this.p.text(x + 20, y, this.name);
     }
 
     draw(gx: number, gy: number, x: number, y: number) {

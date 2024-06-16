@@ -26,14 +26,19 @@ const sketch = function (p: any) {
         Calcium: { id: "Calcium", name: 'Calcium', img: img.Calcium },
     };
 
-    const allCards = {};
-    const allTools = {};
-    const allGridObjects = {};
+    const allCards: { [key: string]: Card } = {};
+    const allTools: { [key: string]: Tool } = {};
+    const allGridObjects: { [key: string]: GridObj } = {};
 
     const gridSize = 6;
-    const grid = []; for (let i = 0; i < gridSize; i++) grid[i] = [];
-    const cards = [];
+    const cards: Array<CardData> = [];
     const tools = [{ id: "wateringCan" }]
+    const grid: Array<Array<GridData>> = [];
+    for (let i = 0; i < gridSize; i++) {
+        grid[i] = [];
+        for (let j = 0; j < gridSize; j++)
+            grid[i][j] = { id: "dirt" };
+    }
 
     const objectiveVitamins: { [key in Vitamin]: number } = {
         A: 12, B: 4, C: 2, D: 2, E: 2, K: 0, Iron: 2, Calcium: 2
@@ -50,7 +55,7 @@ const sketch = function (p: any) {
     let money: number = 100;
     let clicking: boolean = false;
     let justClicked: boolean = false;
-    let inHand: InHand = null;
+    let holdable: Holdable | null = null;
 
     p.mousePressed = () => clicking = true;
     p.mouseReleased = () => { justClicked = true; clicking = false };
@@ -77,25 +82,25 @@ const sketch = function (p: any) {
 
         getTimeLeft: () => timeLeft,
 
-        setInHand: x => inHand = x,
+        setHoldable: x => holdable = x,
     }
 
-    allGridObjects["dirt"] = new GridObjDirt(data, p, "Dirt", img.dirt);
-    allGridObjects["weeds"] = new GridObjWeeds(data, p, "Weeds", img.grass30);
-    allGridObjects["rock"] = new GridObjRock(data, p, "Rocks", img.rocks1);
+    const defaultProps = { data, p };
+    allGridObjects.dirt = new GridObjDirt({ id: "dirt", name: "Dirt", img: img.dirt, ...defaultProps });
+    allGridObjects.weeds = new GridObjWeeds({ id: "weeds", name: "Weeds", img: img.grass30, ...defaultProps });
+    allGridObjects.rock = new GridObjRock({ id: "rock", name: "Rocks", img: img.rocks1, ...defaultProps });
 
-    // allGridObjects["carrots"] = new GridObjCooldownFruit(data, p, "Carrots", img.plant2, ["root"], { water: 2 }, 2, { A: 2 }, 3);
-    // allGridObjects.["strawberries"] = new GridObjCooldownFruit(data, p, "Strawberries", img.plant5, ["fruit", "berry"], { water: 2 }, 2, { B: 2 }, 3);
-    allGridObjects["potato"] = new GridObjCooldownFruit(data, p, "Potatoes", img.potato, ["vegetable"], { water: 2 }, 2, { B: 2 }, 3);
-    allGridObjects["tomato"] = new GridObjCooldownFruit(data, p, "Tomatoes", img.tomato, ["vegetable"], { water: 2 }, 2, { B: 2 }, 3);
+    allGridObjects.carrots = GridObjCooldownFruit.create("carrots", "Carrots", img.plant2, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.strawberries = GridObjCooldownFruit.create("strawberries", "Carrots", img.plant5, ["fruit", "berry"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.potatoes = GridObjCooldownFruit.create("potatoes", "Potatoes", img.potato, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tomatoes = GridObjCooldownFruit.create("tomatoes", "Tomatoes", img.tomato, ["vegetable", "fruit"], 2, 2, { B: 2 }, 3, defaultProps);
 
     Object.keys(allGridObjects).forEach(id => {
-        if (allGridObjects[id].makeCard) {
-            allCards[id] = allGridObjects[id].makeCard();
-        }
+        const card = allGridObjects[id].makeCard();
+        if (card) allCards[id] = card;
     });
 
-    allTools["wateringCan"] = new ToolWateringCan(data, p, "Watering Can", img.wateringCan);
+    allTools.wateringCan = new ToolWateringCan({ id: "wateringCan", name: "Watering Can", img: img.wateringCan, ...defaultProps });
 
     p.preload = function () {
         font = p.loadFont('assets/font.ttf');
@@ -148,24 +153,17 @@ const sketch = function (p: any) {
         spots3.splice(0, nrOfWeeds[2]).forEach(({ x, y }) => grid[x][y] = { id: "weeds" });
         spots3.splice(0, nrOfRocks[2]).forEach(({ x, y }) => grid[x][y] = { id: "rock" });
 
-        cards[0] = { id: "tomato" };
-        cards[1] = { id: "tomato" };
-        cards[2] = { id: "tomato" };
-        cards[3] = { id: "tomato" };
-        cards[4] = { id: "potato" };
-        cards[5] = { id: "potato" };
-        cards[6] = { id: "potato" };
-        cards[7] = { id: "potato" };
-        cards[8] = { id: "potato" };
-        cards[9] = { id: "potato" };
-        cards[10] = { id: "potato" };
+        cards[0] = { id: "tomatoes", stock: 10 };
+        cards[1] = { id: "potatoes", stock: 10 };
+        cards[2] = { id: "carrots", stock: 10 };
+        cards[3] = { id: "strawberries", stock: 10 };
     };
 
     p.draw = function () {
         const mx = p.mouseX;
         const my = p.mouseY;
-        let inHover: InHover = null;
-        let customInHover: () => void = null;
+        let inHover: { hoverable: Hoverable, x: number, y: number, source: Source } | null = null;
+        let customInHover: null | (() => void) = null;
 
         img.ui_back.draw(0, 0);
 
@@ -175,7 +173,7 @@ const sketch = function (p: any) {
             for (let gx = 0; gx < gridSize; gx++) {
                 for (let gy = 0; gy < gridSize; gy++) {
 
-                    const id = grid[gx][gy]?.id;
+                    const id = grid[gx][gy].id;
                     const dx = gridX + gx * 64;
                     const dy = gridY + gy * 64;
 
@@ -184,19 +182,7 @@ const sketch = function (p: any) {
                     else
                         img.dirt.draw(dx, dy);
 
-                    if (!id) {
-                        if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-
-                            inHover = {
-                                id: "dirt",
-                                x: dx, y: dy,
-                                location: "grid",
-                                data: { gx, gy },
-                            };
-                            allGridObjects["dirt"].drawDetails();
-                        }
-                        continue;
-                    }
+                    if (!id) continue;
 
                     const obj = allGridObjects[id];
 
@@ -208,14 +194,7 @@ const sketch = function (p: any) {
                     obj.draw(gx, gy, dx, dy);
 
                     if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                        inHover = {
-                            id,
-                            x: dx, y: dy,
-                            onSelect: (id) => obj.onSelect(id),
-                            location: "grid",
-                            data: { gx, gy },
-                        };
-                        obj.drawDetails();
+                        inHover = { hoverable: obj, x: dx, y: dy, source: { location: "grid", data: { gx, gy } } };
                     }
                 }
             }
@@ -238,14 +217,14 @@ const sketch = function (p: any) {
                 const x = 572;
                 const y = 92;
                 const text = "Weather: " + allWeathers[currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[currentSeason].name;
-                Object.keys(allWeathers).forEach((id, i) => {
+                WEATHER_VALUES.forEach((id: Weather, i) => {
                     const dx = x + i * 64;
                     const dy = y + 16;
                     allWeathers[id].img.draw(dx, dy);
                     if (currentWeather === id)
                         img.select.draw(dx, dy);
                 });
-                Object.keys(allSeasons).forEach((id, i) => {
+                SEASON_VALUES.forEach((id, i) => {
                     const dx = x + i * 64;
                     const dy = y + 160;
                     allSeasons[id].img.draw(dx, dy);
@@ -269,8 +248,8 @@ const sketch = function (p: any) {
             const cardsY = 428;
             for (let _i = 0; _i < cards.length; _i++) {
                 const i = _i;
-                if (!cards[i]) continue;
-                const id = cards[i]?.id;
+                const id = cards[i].id;
+                if (!id) continue;
                 const card = allCards[id];
                 if (!id || !card || !card.img) {
                     console.log(id, card);
@@ -281,14 +260,7 @@ const sketch = function (p: any) {
                 card.img.draw(dx, dy, -1);
 
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = {
-                        id,
-                        x: dx, y: dy,
-                        onSelect: (id) => card.onSelect(id),
-                        location: "cards",
-                        data: { cardIndex: i },
-                    };
-                    card.drawDetails();
+                    inHover = { hoverable: card, x: dx, y: dy, source: { location: "cards", data: { cardIndex: i } } };
                 }
             }
         }
@@ -304,13 +276,7 @@ const sketch = function (p: any) {
                 tool.img.draw(dx, dy);
 
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = {
-                        id,
-                        x: dx, y: dy,
-                        onSelect: (id) => tool.onSelect(id),
-                        location: "tools",
-                    } as InHover;
-                    tool.drawDetails();
+                    inHover = { hoverable: tool, x: dx, y: dy, source: { location: "tools", data: {} } };
                 }
             }
         }
@@ -347,7 +313,7 @@ const sketch = function (p: any) {
 
                 let dx = objectivesX;
                 let dy = objectivesY + 44;
-                const vals = Object.keys(objectiveVitamins).filter(x => objectiveVitamins[x]);
+                const vals = VITAMIN_VALUES.filter(x => objectiveVitamins[x]);
                 vals.forEach((x, i) => {
                     const o = objectiveVitamins[x];
                     if (!o) return;
@@ -366,28 +332,19 @@ const sketch = function (p: any) {
 
         // img.ui_front.draw(0, 0);
 
-        if (inHand) inHand.inHandStep(clicking, justClicked);
-
-        // if (inHand && inHand.img) {
-        //     inHand.img.draw(mx - 32, my - 32, 0);
-        // }
-
-        // if (clicking) {
-
-        // }
+        if (holdable) holdable.inHandStep(clicking, justClicked, mx, my);
 
         if (customInHover) {
             customInHover();
         } else if (inHover) {
-            // img.select.draw(hover.x, hover.y);
-            // if (justClicked) {
-            //     if (inHand) {
-            //         if (inHand.onUse)
-            //             inHand.onUse(hover);
-            //     } else if (hover.onSelect) {
-            //         hover.onSelect(hover);
-            //     }
-            // }
+            img.select.draw(inHover.x, inHover.y);
+            if (justClicked) {
+                if (holdable) {
+                    holdable.inHandClick(inHover.hoverable);
+                } else if (inHover.hoverable.onSelect) {
+                    inHover.hoverable.onSelect(inHover.source);
+                }
+            }
         }
 
         justClicked = false;

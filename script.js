@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -13,21 +14,27 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var Obj = /** @class */ (function () {
-    function Obj(data, p, name, img) {
-        this.data = data;
-        this.p = p;
-        this.name = name;
-        this.img = img;
+    function Obj(props) {
+        this.id = props.id;
+        this.data = props.data;
+        this.p = props.p;
+        this.name = props.name;
+        this.img = props.img;
     }
     Obj.prototype.drawDescription = function (x, y) {
-        console.log("".concat(this.id, ".drawDescription(").concat(x, ", ").concat(y, ") not defined."));
-    };
-    Obj.prototype.onSelect = function (id) {
-        console.log("".concat(this.id, ".onSelect(").concat(id, ") not defined."));
-    };
-    Obj.prototype.onUse = function (source, destination) {
-        console.log("".concat(this.id, ".onUse(").concat(source, ", ").concat(destination, ") not defined."));
+        this.p.text(x + 20, y, this.name);
     };
     Obj.prototype.draw = function (gx, gy, x, y) {
     };
@@ -46,25 +53,24 @@ var Obj = /** @class */ (function () {
 }());
 var Tool = /** @class */ (function (_super) {
     __extends(Tool, _super);
-    function Tool(data, p, name, img) {
-        return _super.call(this, data, p, name, img) || this;
+    function Tool(props) {
+        return _super.call(this, props) || this;
     }
     Tool.prototype.drawDescription = function (x, y) {
+        _super.prototype.drawDescription.call(this, x, y);
         this.p.text("On use:", x, y);
         this.p.text("+", x + 16, y + 40);
         // this.data.allVitamins[v].img.draw(x + this.p.textWidth(text), y + 4)
     };
     Tool.prototype.onSelect = function (source) {
-        this.data.setInHand(this);
-    };
-    Tool.prototype.inHandStep = function (clicking, justClicked) {
+        this.data.setHoldable(this);
     };
     Tool.prototype.onUse = function (source, destination) {
         if (source.location === "tools" && destination.location == "grid") {
             var _a = destination.data, gx = _a.gx, gy = _a.gy;
             this.onUseOnGrid(gx, gy);
         }
-        this.data.setInHand(undefined);
+        this.data.setHoldable(null);
     };
     Tool.prototype.onUseOnGrid = function (gx, gy) {
         console.log("Tool ".concat(this.id, ".onUseOnGrid(gx:").concat(gx, ", gy:").concat(gy, ") not defined."));
@@ -79,7 +85,7 @@ var ToolWateringCan = /** @class */ (function (_super) {
     ToolWateringCan.prototype.onUseOnGrid = function (gx, gy) {
         var water = this.data.getWater();
         var gridData = this.data.grid[gx][gy];
-        if (gridData && water > 0 && !gridData.wasWatered) {
+        if (gridData.id && water > 0 && !gridData.wasWatered) {
             var gridObj = this.data.allGridObjects[gridData.id];
             if (gridObj) {
                 gridObj.onWatering(gx, gy);
@@ -87,6 +93,16 @@ var ToolWateringCan = /** @class */ (function (_super) {
                 this.data.addWater(-1);
             }
         }
+    };
+    ToolWateringCan.prototype.inHandStep = function (clicking, justClicked, mx, my) {
+        var dx = mx - this.img.w / 2;
+        var dy = my - this.img.h / 2;
+        if (clicking)
+            this.img.draw(dx, dy, 0);
+        else
+            this.data.img.dirt.draw(dx, dy, 0);
+    };
+    ToolWateringCan.prototype.inHandClick = function (hover) {
     };
     return ToolWateringCan;
 }(Tool));
@@ -232,6 +248,10 @@ var img = {
     grass31: { path: 'assets/grasses/grassandflowers31.png' },
     grass32: { path: 'assets/grasses/grassandflowers32.png' },
 };
+var SEASON_VALUES = ["spring", "summer", "autumn", "winter"];
+var WEATHER_VALUES = ["sunny", "rain", "thunder", "windy", "snowy"];
+var LOCATION_VALUES = ["cards", "grid", "tools"];
+var VITAMIN_VALUES = ["A", "B", "C", "D", "E", "K", "Iron", "Calcium"];
 var sketch = function (p) {
     var allWeathers = {
         sunny: { id: "sunny", name: "Sunny", img: img.sunny },
@@ -260,11 +280,14 @@ var sketch = function (p) {
     var allTools = {};
     var allGridObjects = {};
     var gridSize = 6;
-    var grid = [];
-    for (var i = 0; i < gridSize; i++)
-        grid[i] = [];
     var cards = [];
     var tools = [{ id: "wateringCan" }];
+    var grid = [];
+    for (var i = 0; i < gridSize; i++) {
+        grid[i] = [];
+        for (var j = 0; j < gridSize; j++)
+            grid[i][j] = { id: "dirt" };
+    }
     var objectiveVitamins = {
         A: 12, B: 4, C: 2, D: 2, E: 2, K: 0, Iron: 2, Calcium: 2
     };
@@ -279,7 +302,7 @@ var sketch = function (p) {
     var money = 100;
     var clicking = false;
     var justClicked = false;
-    var inHand = null;
+    var holdable = null;
     p.mousePressed = function () { return clicking = true; };
     p.mouseReleased = function () { justClicked = true; clicking = false; };
     var data = {
@@ -302,21 +325,22 @@ var sketch = function (p) {
         getMoney: function () { return money; },
         addMoney: function (x) { return money += x; },
         getTimeLeft: function () { return timeLeft; },
-        setInHand: function (x) { return inHand = x; },
+        setHoldable: function (x) { return holdable = x; },
     };
-    allGridObjects["dirt"] = new GridObjDirt(data, p, "Dirt", img.dirt);
-    allGridObjects["weeds"] = new GridObjWeeds(data, p, "Weeds", img.grass30);
-    allGridObjects["rock"] = new GridObjRock(data, p, "Rocks", img.rocks1);
-    // allGridObjects["carrots"] = new GridObjCooldownFruit(data, p, "Carrots", img.plant2, ["root"], { water: 2 }, 2, { A: 2 }, 3);
-    // allGridObjects.["strawberries"] = new GridObjCooldownFruit(data, p, "Strawberries", img.plant5, ["fruit", "berry"], { water: 2 }, 2, { B: 2 }, 3);
-    allGridObjects["potato"] = new GridObjCooldownFruit(data, p, "Potatoes", img.potato, ["vegetable"], { water: 2 }, 2, { B: 2 }, 3);
-    allGridObjects["tomato"] = new GridObjCooldownFruit(data, p, "Tomatoes", img.tomato, ["vegetable"], { water: 2 }, 2, { B: 2 }, 3);
+    var defaultProps = { data: data, p: p };
+    allGridObjects.dirt = new GridObjDirt(__assign({ id: "dirt", name: "Dirt", img: img.dirt }, defaultProps));
+    allGridObjects.weeds = new GridObjWeeds(__assign({ id: "weeds", name: "Weeds", img: img.grass30 }, defaultProps));
+    allGridObjects.rock = new GridObjRock(__assign({ id: "rock", name: "Rocks", img: img.rocks1 }, defaultProps));
+    allGridObjects.carrots = GridObjCooldownFruit.create("carrots", "Carrots", img.plant2, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.strawberries = GridObjCooldownFruit.create("strawberries", "Carrots", img.plant5, ["fruit", "berry"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.potatoes = GridObjCooldownFruit.create("potatoes", "Potatoes", img.potato, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tomatoes = GridObjCooldownFruit.create("tomatoes", "Tomatoes", img.tomato, ["vegetable", "fruit"], 2, 2, { B: 2 }, 3, defaultProps);
     Object.keys(allGridObjects).forEach(function (id) {
-        if (allGridObjects[id].makeCard) {
-            allCards[id] = allGridObjects[id].makeCard();
-        }
+        var card = allGridObjects[id].makeCard();
+        if (card)
+            allCards[id] = card;
     });
-    allTools["wateringCan"] = new ToolWateringCan(data, p, "Watering Can", img.wateringCan);
+    allTools.wateringCan = new ToolWateringCan(__assign({ id: "wateringCan", name: "Watering Can", img: img.wateringCan }, defaultProps));
     p.preload = function () {
         font = p.loadFont('assets/font.ttf');
         Object.keys(img).forEach(function (name) {
@@ -393,20 +417,13 @@ var sketch = function (p) {
             var x = _a.x, y = _a.y;
             return grid[x][y] = { id: "rock" };
         });
-        cards[0] = { id: "tomato" };
-        cards[1] = { id: "tomato" };
-        cards[2] = { id: "tomato" };
-        cards[3] = { id: "tomato" };
-        cards[4] = { id: "potato" };
-        cards[5] = { id: "potato" };
-        cards[6] = { id: "potato" };
-        cards[7] = { id: "potato" };
-        cards[8] = { id: "potato" };
-        cards[9] = { id: "potato" };
-        cards[10] = { id: "potato" };
+        cards[0] = { id: "tomatoes", stock: 10 };
+        cards[1] = { id: "potatoes", stock: 10 };
+        cards[2] = { id: "carrots", stock: 10 };
+        cards[3] = { id: "strawberries", stock: 10 };
     };
     p.draw = function () {
-        var _a, _b, _c, _d;
+        var _a, _b;
         var mx = p.mouseX;
         var my = p.mouseY;
         var inHover = null;
@@ -416,26 +433,16 @@ var sketch = function (p) {
             var gridX = 16;
             var gridY = 20;
             for (var gx = 0; gx < gridSize; gx++) {
-                var _loop_1 = function (gy) {
-                    var id = (_a = grid[gx][gy]) === null || _a === void 0 ? void 0 : _a.id;
+                for (var gy = 0; gy < gridSize; gy++) {
+                    var id = grid[gx][gy].id;
                     var dx = gridX + gx * 64;
                     var dy = gridY + gy * 64;
-                    if ((_b = grid[gx][gy]) === null || _b === void 0 ? void 0 : _b.wasWatered)
+                    if ((_a = grid[gx][gy]) === null || _a === void 0 ? void 0 : _a.wasWatered)
                         img.wetDirt.draw(dx, dy);
                     else
                         img.dirt.draw(dx, dy);
-                    if (!id) {
-                        if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                            inHover = {
-                                id: "dirt",
-                                x: dx, y: dy,
-                                location: "grid",
-                                data: { gx: gx, gy: gy },
-                            };
-                            allGridObjects["dirt"].drawDetails();
-                        }
-                        return "continue";
-                    }
+                    if (!id)
+                        continue;
                     var obj = allGridObjects[id];
                     if (!obj || !obj.draw) {
                         console.log(id, obj);
@@ -443,18 +450,8 @@ var sketch = function (p) {
                     }
                     obj.draw(gx, gy, dx, dy);
                     if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                        inHover = {
-                            id: id,
-                            x: dx, y: dy,
-                            onSelect: function (id) { return obj.onSelect(id); },
-                            location: "grid",
-                            data: { gx: gx, gy: gy },
-                        };
-                        obj.drawDetails();
+                        inHover = { hoverable: obj, x: dx, y: dy, source: { location: "grid", data: { gx: gx, gy: gy } } };
                     }
-                };
-                for (var gy = 0; gy < gridSize; gy++) {
-                    _loop_1(gy);
                 }
             }
         }
@@ -473,14 +470,14 @@ var sketch = function (p) {
                 var x = 572;
                 var y = 92;
                 var text = "Weather: " + allWeathers[currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[currentSeason].name;
-                Object.keys(allWeathers).forEach(function (id, i) {
+                WEATHER_VALUES.forEach(function (id, i) {
                     var dx = x + i * 64;
                     var dy = y + 16;
                     allWeathers[id].img.draw(dx, dy);
                     if (currentWeather === id)
                         img.select.draw(dx, dy);
                 });
-                Object.keys(allSeasons).forEach(function (id, i) {
+                SEASON_VALUES.forEach(function (id, i) {
                     var dx = x + i * 64;
                     var dy = y + 160;
                     allSeasons[id].img.draw(dx, dy);
@@ -500,11 +497,11 @@ var sketch = function (p) {
         { // CARDS
             var cardsX = 16;
             var cardsY = 428;
-            var _loop_2 = function (_i) {
+            for (var _i = 0; _i < cards.length; _i++) {
                 var i = _i;
-                if (!cards[i])
-                    return "continue";
-                var id = (_c = cards[i]) === null || _c === void 0 ? void 0 : _c.id;
+                var id = cards[i].id;
+                if (!id)
+                    continue;
                 var card = allCards[id];
                 if (!id || !card || !card.img) {
                     console.log(id, card);
@@ -514,41 +511,22 @@ var sketch = function (p) {
                 var dy = cardsY;
                 card.img.draw(dx, dy, -1);
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = {
-                        id: id,
-                        x: dx, y: dy,
-                        onSelect: function (id) { return card.onSelect(id); },
-                        location: "cards",
-                        data: { cardIndex: i },
-                    };
-                    card.drawDetails();
+                    inHover = { hoverable: card, x: dx, y: dy, source: { location: "cards", data: { cardIndex: i } } };
                 }
-            };
-            for (var _i = 0; _i < cards.length; _i++) {
-                _loop_2(_i);
             }
         }
         { // TOOLS
             var cardsX = 420;
             var cardsY = 84;
-            var _loop_3 = function (i) {
-                var id = (_d = tools[i]) === null || _d === void 0 ? void 0 : _d.id;
+            for (var i = 0; i < tools.length; i++) {
+                var id = (_b = tools[i]) === null || _b === void 0 ? void 0 : _b.id;
                 var tool = allTools[id];
                 var dx = cardsX + i * 64;
                 var dy = cardsY;
                 tool.img.draw(dx, dy);
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = {
-                        id: id,
-                        x: dx, y: dy,
-                        onSelect: function (id) { return tool.onSelect(id); },
-                        location: "tools",
-                    };
-                    tool.drawDetails();
+                    inHover = { hoverable: tool, x: dx, y: dy, source: { location: "tools", data: {} } };
                 }
-            };
-            for (var i = 0; i < tools.length; i++) {
-                _loop_3(i);
             }
         }
         { // time
@@ -584,7 +562,7 @@ var sketch = function (p) {
                 p.text("Season\nObjectives:", objectivesX, objectivesY_1);
                 var dx_1 = objectivesX;
                 var dy_1 = objectivesY_1 + 44;
-                var vals_1 = Object.keys(objectiveVitamins).filter(function (x) { return objectiveVitamins[x]; });
+                var vals_1 = VITAMIN_VALUES.filter(function (x) { return objectiveVitamins[x]; });
                 vals_1.forEach(function (x, i) {
                     var o = objectiveVitamins[x];
                     if (!o)
@@ -601,49 +579,50 @@ var sketch = function (p) {
             }
         }
         // img.ui_front.draw(0, 0);
-        if (inHand)
-            inHand.inHandStep(clicking, justClicked);
-        // if (inHand && inHand.img) {
-        //     inHand.img.draw(mx - 32, my - 32, 0);
-        // }
-        // if (clicking) {
-        // }
+        if (holdable)
+            holdable.inHandStep(clicking, justClicked, mx, my);
         if (customInHover) {
             customInHover();
         }
         else if (inHover) {
-            // img.select.draw(hover.x, hover.y);
-            // if (justClicked) {
-            //     if (inHand) {
-            //         if (inHand.onUse)
-            //             inHand.onUse(hover);
-            //     } else if (hover.onSelect) {
-            //         hover.onSelect(hover);
-            //     }
-            // }
+            img.select.draw(inHover.x, inHover.y);
+            if (justClicked) {
+                if (holdable) {
+                    holdable.inHandClick(inHover.hoverable);
+                }
+                else if (inHover.hoverable.onSelect) {
+                    inHover.hoverable.onSelect(inHover.source);
+                }
+            }
         }
         justClicked = false;
     };
 };
-// CARDS
 var Card = /** @class */ (function (_super) {
     __extends(Card, _super);
-    function Card(data, p, name, img, relatedGridObj) {
-        var _this = _super.call(this, data, p, name, img) || this;
-        _this.relatedGridObj = relatedGridObj;
+    function Card(props) {
+        var _this = _super.call(this, props) || this;
+        _this.relatedGridObj = props.relatedGridObj;
         return _this;
     }
     Card.prototype.onSelect = function (source) {
-        this.data.setInHand(this);
+        this.data.setHoldable(this);
     };
     Card.prototype.inHandStep = function (clicking, justClicked) {
     };
+    Card.prototype.inHandClick = function (hover) {
+    };
     Card.prototype.onUse = function (source, destination) {
         if (destination.location === "grid") {
-            this.relatedGridObj.putOnGrid(source, destination);
-            this.data.cards[source.data.cardIndex] = null;
+            var data = this.data.cards[source.data.cardIndex];
+            if (data.id && data.stock > 0) {
+                this.relatedGridObj.putOnGrid(source, destination);
+                data.stock--;
+                if (data.stock <= 0)
+                    data.id = null;
+            }
         }
-        this.data.setInHand(undefined);
+        this.data.setHoldable(null);
     };
     Card.prototype.drawDescription = function (x, y) {
         if (this.relatedGridObj && this.relatedGridObj.drawDescription)
@@ -689,14 +668,15 @@ var seeds = [seedgen(0), seedgen(1), seedgen(2), seedgen(3)];
 var getRand = sfc32(seeds[0], seeds[1], seeds[2], seeds[3]);
 for (var i = 0; i < 10; i++)
     console.log(getRand());
-// GRID OBJECTS
 var GridObj = /** @class */ (function (_super) {
     __extends(GridObj, _super);
-    function GridObj(data, p, name, img, tags) {
-        var _this = _super.call(this, data, p, name, img) || this;
-        _this.tags = tags;
+    function GridObj(props) {
+        var _this = _super.call(this, props) || this;
+        _this.tags = props.tags;
         return _this;
     }
+    GridObj.prototype.putOnGrid = function (source, destination) {
+    };
     GridObj.prototype.draw = function (gx, gy, x, y) {
         this.img.draw(x, y);
     };
@@ -704,6 +684,9 @@ var GridObj = /** @class */ (function (_super) {
         console.log("".concat(this.id, ".endOfTurn() not defined."));
     };
     GridObj.prototype.onWatering = function (gx, gy) {
+    };
+    GridObj.prototype.makeCard = function () {
+        return null;
     };
     return GridObj;
 }(Obj));
@@ -733,25 +716,35 @@ var GridObj = /** @class */ (function (_super) {
 // }
 var GridObjCard = /** @class */ (function (_super) {
     __extends(GridObjCard, _super);
-    function GridObjCard(data, p, name, img, tags, placeCosts) {
-        var _this = _super.call(this, data, p, name, img, tags) || this;
-        _this.placeCosts = placeCosts;
+    function GridObjCard(props) {
+        var _this = _super.call(this, props) || this;
+        _this.cost = props.cost;
         return _this;
     }
     return GridObjCard;
 }(GridObj));
 var GridObjCooldownFruit = /** @class */ (function (_super) {
     __extends(GridObjCooldownFruit, _super);
-    function GridObjCooldownFruit(data, p, name, img, tags, placeCosts, growTime, produces, cooldown) {
-        var _this = _super.call(this, data, p, name, img, tags, placeCosts) || this;
-        _this.growTime = growTime;
-        _this.produces = produces;
-        _this.cooldown = cooldown;
+    function GridObjCooldownFruit(props) {
+        var _this = _super.call(this, props) || this;
+        _this.growTime = props.growTime;
+        _this.produces = props.produces;
+        _this.cooldown = props.cooldown;
         return _this;
     }
+    GridObjCooldownFruit.create = function (id, name, img, tags, cost, growTime, produces, cooldown, defaultProps) {
+        return new GridObjCooldownFruit(__assign({ id: id, name: name, img: img, cost: { money: cost }, cooldown: cooldown, growTime: growTime, produces: produces, tags: tags }, defaultProps));
+    };
     GridObjCooldownFruit.prototype.makeCard = function () {
         var _this = this;
-        var card = new Card(this.data, this.p, this.name, this.img, this);
+        var card = new Card({
+            id: this.id + "Card",
+            data: this.data,
+            p: this.p,
+            name: this.name,
+            img: this.img,
+            relatedGridObj: this
+        });
         card.draw = function (gx, gy, x, y) {
             // if (this.data.grid[gx][gy].wasWatered)
             //     this.data.img.wetDirt.draw(x, y)
@@ -768,13 +761,14 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
         var cardIndex = source.data;
         var _a = destination.data, gx = _a.gx, gy = _a.gy;
         this.data.grid[gx][gy] = { id: this.id, growTime: this.growTime };
-        this.data.cards[cardIndex] = undefined;
+        this.data.cards[cardIndex].id = null;
     };
     GridObjCooldownFruit.prototype.drawDescription = function (x, y) {
         var _this = this;
-        this.p.text(x, y, this.name);
+        _super.prototype.drawDescription.call(this, x, y);
+        // this.p.text(x, y, );
         this.p.text("Every ".concat(this.cooldown, " turns:"), x, y);
-        Object.keys(this.produces).forEach(function (v) {
+        VITAMIN_VALUES.filter(function (x) { return _this.produces[x]; }).forEach(function (v) {
             var text = "+".concat(_this.produces[v]);
             _this.p.text(text, x, y + 32);
             _this.data.allVitamins[v].img.draw(x + _this.p.textWidth(text), y + 4);
@@ -797,8 +791,8 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
 }(GridObjCard));
 var GridObjDirt = /** @class */ (function (_super) {
     __extends(GridObjDirt, _super);
-    function GridObjDirt(data, p, name, img) {
-        return _super.call(this, data, p, name, img, []) || this;
+    function GridObjDirt(props) {
+        return _super.call(this, __assign(__assign({}, props), { tags: [] })) || this;
     }
     GridObjDirt.prototype.drawDescription = function (x, y) {
         this.p.text("Usable soil.", x, y);
@@ -807,8 +801,8 @@ var GridObjDirt = /** @class */ (function (_super) {
 }(GridObj));
 var GridObjRock = /** @class */ (function (_super) {
     __extends(GridObjRock, _super);
-    function GridObjRock(data, p, name, img) {
-        return _super.call(this, data, p, name, img, ["mineral"]) || this;
+    function GridObjRock(props) {
+        return _super.call(this, __assign(__assign({}, props), { tags: ["mineral"] })) || this;
     }
     GridObjRock.prototype.drawDescription = function (x, y) {
         this.p.text("Remove with\npickaxe.", x, y);
@@ -817,8 +811,8 @@ var GridObjRock = /** @class */ (function (_super) {
 }(GridObj));
 var GridObjWeeds = /** @class */ (function (_super) {
     __extends(GridObjWeeds, _super);
-    function GridObjWeeds(data, p, name, img) {
-        return _super.call(this, data, p, name, img, ["plant"]) || this;
+    function GridObjWeeds(props) {
+        return _super.call(this, __assign(__assign({}, props), { tags: ["plant"] })) || this;
     }
     GridObjWeeds.prototype.drawDescription = function (x, y) {
         this.p.text("Remove with\nsickle.", x, y);

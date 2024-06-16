@@ -1,10 +1,10 @@
 class GridObjWeeds extends GridObj {
 
-    constructor(data, p, name, img) {
-        super(data, p, name, img, ["plant"]);
+    constructor(props: ObjProps) {
+        super({ ...props, tags: ["plant"] });
     }
 
-    drawDescription(x, y) {
+    drawDescription(x: number, y: number) {
         this.p.text("Remove with\nsickle.", x, y);
     }
 }

@@ -3,6 +3,11 @@ type Weather = "sunny" | "rain" | "thunder" | "windy" | "snowy";
 type Vitamin = "A" | "B" | "C" | "D" | "E" | "K" | "Iron" | "Calcium";
 type Locationn = "cards" | "grid" | "tools";
 
+const SEASON_VALUES: Array<Season> = ["spring", "summer", "autumn", "winter"];
+const WEATHER_VALUES: Array<Weather> = ["sunny", "rain", "thunder", "windy", "snowy"];
+const LOCATION_VALUES: Array<Locationn> = ["cards", "grid", "tools"];
+const VITAMIN_VALUES: Array<Vitamin> = ["A", "B", "C", "D", "E", "K", "Iron", "Calcium"];
+
 interface Image {
     img: any;
     w: number;
@@ -11,13 +16,14 @@ interface Image {
 }
 
 interface GridData {
-    id: string;
+    id: string | null;
     wasWatered?: boolean;
     growTime?: number;
 }
 
-interface InHand {
-    inHandStep: (clicking: boolean, justClicked: boolean) => void
+interface CardData {
+    id: string | null;
+    stock: number;
 }
 
 interface GridPos {
@@ -25,14 +31,26 @@ interface GridPos {
     gy: number;
 }
 
-interface InHover {
-    img?: Image;
-    id: string,
-    x: number, y: number,
-    location: Locationn,
-    data: any,
-    onUse?: (destination: any) => void;
-    onSelect?: (hover: InHover) => void;
+interface Source {
+    data: any;
+    location: Locationn;
+}
+
+interface Destination {
+    data: any;
+    location: Locationn;
+}
+
+interface Hoverable {
+    drawDetails: (x: number, y: number) => void;
+    onSelect?: (source: Source) => void;
+    onUse?: (source: Source, destination: Destination) => void;
+    data?: any;
+}
+
+interface Holdable {
+    inHandStep: (clicking: boolean, justClicked: boolean, mx: number, my: number) => void
+    inHandClick: (hover: Hoverable) => void
 }
 
 interface Data {
@@ -48,7 +66,7 @@ interface Data {
 
     gridSize: number,
     grid: Array<Array<GridData>>,
-    cards: Array<string>,
+    cards: Array<CardData>,
 
     objectiveVitamins: { [key in Vitamin]: number },
     currentVitamins: { [key in Vitamin]: number },
@@ -64,5 +82,5 @@ interface Data {
 
     getTimeLeft: () => number,
 
-    setInHand: (x: InHand) => void,
+    setHoldable: (x: Holdable | null) => void,
 }

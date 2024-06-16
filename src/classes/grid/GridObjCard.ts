@@ -22,11 +22,23 @@
 //         this.img.draw(x, y)
 //     }
 // }
-class GridObjCard extends GridObj {
-    placeCosts;
 
-    constructor(data, p, name, img, tags, placeCosts) {
-        super(data, p, name, img, tags);
-        this.placeCosts = placeCosts;
+interface CardCost {
+    water?: number;
+    money?: number;
+    testOtherCosts?: () => boolean;
+    runOtherCosts?: () => void;
+}
+
+interface GridObjCardProps extends GridObjProps {
+    cost: CardCost;
+}
+
+class GridObjCard extends GridObj implements GridObjCardProps {
+    cost: CardCost;
+
+    constructor(props: GridObjCardProps) {
+        super(props);
+        this.cost = props.cost;
     }
 }

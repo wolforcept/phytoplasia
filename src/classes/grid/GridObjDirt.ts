@@ -1,10 +1,10 @@
 class GridObjDirt extends GridObj {
 
-    constructor(data, p, name, img) {
-        super(data, p, name, img, []);
+    constructor(props: ObjProps) {
+        super({ ...props, tags: [] });
     }
 
-    drawDescription(x, y) {
+    drawDescription(x: number, y: number) {
         this.p.text("Usable soil.", x, y);
     }
 }
