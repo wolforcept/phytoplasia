@@ -11,6 +11,7 @@ const img: any = {
     coin: { path: 'assets/coin.png' },
 
     wateringCan: { path: 'assets/tools/watering_can.png' },
+    wateringCanHeld: { path: 'assets/tools/watering_can_held.png' },
 
     rocks1: { path: 'assets/rocks/rocks1.png' },
     rocks2: { path: 'assets/rocks/rocks2.png' },

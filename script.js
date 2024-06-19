@@ -51,6 +51,38 @@ var Obj = /** @class */ (function () {
     };
     return Obj;
 }());
+var ParticleSystem = /** @class */ (function () {
+    function ParticleSystem() {
+        this.particles = [];
+    }
+    ParticleSystem.prototype.step = function (p5) {
+        for (var i = 0; i < this.particles.length; i++) {
+            var particle = this.particles[i];
+            if (particle.life <= 0) {
+                this.particles.splice(i, 1);
+                i--;
+            }
+            else {
+                p5.noStroke();
+                p5.fill(p5.color(particle.color.r, particle.color.g, particle.color.b, particle.color.a));
+                p5.square(particle.x, particle.y, particle.size);
+                particle.life--;
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                if (particle.ax)
+                    particle.vx += particle.ax;
+                if (particle.ay)
+                    particle.vy += particle.ay;
+                if (particle.compute)
+                    particle.compute(particle);
+            }
+        }
+    };
+    ParticleSystem.prototype.add = function (particle) {
+        this.particles.push(particle);
+    };
+    return ParticleSystem;
+}());
 var Tool = /** @class */ (function (_super) {
     __extends(Tool, _super);
     function Tool(props) {
@@ -63,49 +95,21 @@ var Tool = /** @class */ (function (_super) {
         // this.data.allVitamins[v].img.draw(x + this.p.textWidth(text), y + 4)
     };
     Tool.prototype.onSelect = function (source) {
-        this.data.setHoldable(this);
+        this.data.holdData = { holdable: this, data: {} };
     };
-    Tool.prototype.onUse = function (source, destination) {
-        if (source.location === "tools" && destination.location == "grid") {
-            var _a = destination.data, gx = _a.gx, gy = _a.gy;
-            this.onUseOnGrid(gx, gy);
-        }
-        this.data.setHoldable(null);
-    };
-    Tool.prototype.onUseOnGrid = function (gx, gy) {
-        console.log("Tool ".concat(this.id, ".onUseOnGrid(gx:").concat(gx, ", gy:").concat(gy, ") not defined."));
+    Tool.prototype.release = function () {
+        this.data.holdData = { holdable: null, data: null };
     };
     return Tool;
 }(Obj));
-var ToolWateringCan = /** @class */ (function (_super) {
-    __extends(ToolWateringCan, _super);
-    function ToolWateringCan() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var Util = /** @class */ (function () {
+    function Util() {
     }
-    ToolWateringCan.prototype.onUseOnGrid = function (gx, gy) {
-        var water = this.data.getWater();
-        var gridData = this.data.grid[gx][gy];
-        if (gridData.id && water > 0 && !gridData.wasWatered) {
-            var gridObj = this.data.allGridObjects[gridData.id];
-            if (gridObj) {
-                gridObj.onWatering(gx, gy);
-                gridData.wasWatered = true;
-                this.data.addWater(-1);
-            }
-        }
+    Util.randomInt = function (min, max) {
+        return Math.floor(min + Math.random() * (max + 1 - min));
     };
-    ToolWateringCan.prototype.inHandStep = function (clicking, justClicked, mx, my) {
-        var dx = mx - this.img.w / 2;
-        var dy = my - this.img.h / 2;
-        if (clicking)
-            this.img.draw(dx, dy, 0);
-        else
-            this.data.img.dirt.draw(dx, dy, 0);
-    };
-    ToolWateringCan.prototype.inHandClick = function (hover) {
-    };
-    return ToolWateringCan;
-}(Tool));
+    return Util;
+}());
 var img = {
     // UI
     ui_back: { path: 'assets/ui_back.png' },
@@ -117,6 +121,7 @@ var img = {
     wetDirt: { path: 'assets/wet_dirt.png' },
     coin: { path: 'assets/coin.png' },
     wateringCan: { path: 'assets/tools/watering_can.png' },
+    wateringCanHeld: { path: 'assets/tools/watering_can_held.png' },
     rocks1: { path: 'assets/rocks/rocks1.png' },
     rocks2: { path: 'assets/rocks/rocks2.png' },
     rocks3: { path: 'assets/rocks/rocks3.png' },
@@ -294,19 +299,14 @@ var sketch = function (p) {
     var currentVitamins = {
         A: 0, B: 0, C: 0, D: 0, E: 0, K: 0, Iron: 0, Calcium: 0
     };
+    var particleSystem = new ParticleSystem();
     var font;
-    var currentWeather = "sunny";
-    var currentSeason = "spring";
-    var water = 16;
-    var timeLeft = 19;
-    var money = 100;
-    var clicking = false;
-    var justClicked = false;
-    var holdable = null;
-    p.mousePressed = function () { return clicking = true; };
-    p.mouseReleased = function () { justClicked = true; clicking = false; };
+    var mouseEvents = { clicking: false, justPressed: false, justReleased: false };
+    p.mousePressed = function () { mouseEvents.clicking = true; mouseEvents.justPressed = true; };
+    p.mouseReleased = function () { mouseEvents.clicking = false; mouseEvents.justReleased = true; };
     var data = {
         img: img,
+        getParticleSystem: function () { return particleSystem; },
         allWeathers: allWeathers,
         allSeasons: allSeasons,
         allVitamins: allVitamins,
@@ -318,14 +318,13 @@ var sketch = function (p) {
         cards: cards,
         objectiveVitamins: objectiveVitamins,
         currentVitamins: currentVitamins,
-        getWater: function () { return water; },
-        addWater: function (x) { return water += x; },
-        getCurrentWeather: function () { return currentWeather; },
-        getCurrentSeason: function () { return currentSeason; },
-        getMoney: function () { return money; },
-        addMoney: function (x) { return money += x; },
-        getTimeLeft: function () { return timeLeft; },
-        setHoldable: function (x) { return holdable = x; },
+        hoverData: { hoverable: null, data: null },
+        holdData: { holdable: null, data: null },
+        water: 16,
+        money: 100,
+        currentWeather: "sunny",
+        currentSeason: "spring",
+        timeLeft: 19,
     };
     var defaultProps = { data: data, p: p };
     allGridObjects.dirt = new GridObjDirt(__assign({ id: "dirt", name: "Dirt", img: img.dirt }, defaultProps));
@@ -458,30 +457,30 @@ var sketch = function (p) {
         { // WEATHER
             var weatherX = 420;
             var weatherY = 8;
-            allWeathers[currentWeather].img.draw(weatherX, weatherY);
+            allWeathers[data.currentWeather].img.draw(weatherX, weatherY);
         }
         { // SEASON
             var seasonX = 480;
             var seasonY = 8;
-            allSeasons[currentSeason].img.draw(seasonX, seasonY);
+            allSeasons[data.currentSeason].img.draw(seasonX, seasonY);
         }
         if (mx > 420 && mx < 546 && my > 8 && my < 76) {
             customInHover = function () {
                 var x = 572;
                 var y = 92;
-                var text = "Weather: " + allWeathers[currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[currentSeason].name;
+                var text = "Weather: " + allWeathers[data.currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[data.currentSeason].name;
                 WEATHER_VALUES.forEach(function (id, i) {
                     var dx = x + i * 64;
                     var dy = y + 16;
                     allWeathers[id].img.draw(dx, dy);
-                    if (currentWeather === id)
+                    if (data.currentWeather === id)
                         img.select.draw(dx, dy);
                 });
                 SEASON_VALUES.forEach(function (id, i) {
                     var dx = x + i * 64;
                     var dy = y + 160;
                     allSeasons[id].img.draw(dx, dy);
-                    if (currentSeason === id)
+                    if (data.currentSeason === id)
                         img.select.draw(dx, dy);
                 });
                 p.text(text, x, y);
@@ -490,7 +489,7 @@ var sketch = function (p) {
         { // WATER
             var waterX = 496;
             var waterY = 380;
-            for (var i = 0; i < water; i++) {
+            for (var i = 0; i < data.water; i++) {
                 img.water.draw(waterX, waterY - i * (img.water.h));
             }
         }
@@ -532,7 +531,7 @@ var sketch = function (p) {
         { // time
             var timeX = 552;
             var timeY = 8;
-            for (var i = 0; i < timeLeft; i++) {
+            for (var i = 0; i < data.timeLeft; i++) {
                 img.time.draw(timeX + i * (img.time.w - 4), timeY);
             }
         }
@@ -540,15 +539,15 @@ var sketch = function (p) {
             var timeX = 4 * 213;
             var timeY = 4 * 109 + 2;
             img.coin.draw(timeX, timeY);
-            var textOrig = "" + money;
+            var textOrig = "" + data.money;
             var text = "" + textOrig;
-            if (money < 10)
+            if (data.money < 10)
                 text = "0" + text;
-            if (money < 100)
+            if (data.money < 100)
                 text = "0" + text;
-            if (money < 1000)
+            if (data.money < 1000)
                 text = "0" + text;
-            if (money < 10000)
+            if (data.money < 10000)
                 text = "0" + text;
             p.fill(0, 0, 0, 80);
             p.text(text, timeX - p.textWidth(text) - 4, timeY + 32);
@@ -579,23 +578,29 @@ var sketch = function (p) {
             }
         }
         // img.ui_front.draw(0, 0);
-        if (holdable)
-            holdable.inHandStep(clicking, justClicked, mx, my);
+        if (data.holdData.holdable)
+            data.holdData.holdable.inHandStep(mouseEvents, mx, my);
         if (customInHover) {
             customInHover();
         }
         else if (inHover) {
             img.select.draw(inHover.x, inHover.y);
-            if (justClicked) {
-                if (holdable) {
-                    holdable.inHandClick(inHover.hoverable);
-                }
-                else if (inHover.hoverable.onSelect) {
-                    inHover.hoverable.onSelect(inHover.source);
-                }
-            }
+            if (mouseEvents.justReleased && !data.holdData.holdable && inHover.hoverable.onSelect)
+                inHover.hoverable.onSelect(inHover.source);
         }
-        justClicked = false;
+        mouseEvents.justPressed = false;
+        mouseEvents.justReleased = false;
+        particleSystem.step(p);
+        particleSystem.add({
+            color: { r: 0, g: Util.randomInt(100, 200), b: 255, a: 255 },
+            life: 50,
+            size: 4,
+            vx: Util.randomInt(1, 3),
+            vy: 10,
+            x: Math.random() * p.width,
+            y: 0,
+            // compute: (p: Particle) => { if (p.color.a) p.color.a -= 2 }
+        });
     };
 };
 var Card = /** @class */ (function (_super) {
@@ -605,10 +610,10 @@ var Card = /** @class */ (function (_super) {
         _this.relatedGridObj = props.relatedGridObj;
         return _this;
     }
-    Card.prototype.onSelect = function (source) {
-        this.data.setHoldable(this);
+    Card.prototype.inHandStep = function (mouseEvents, mx, my) {
     };
-    Card.prototype.inHandStep = function (clicking, justClicked) {
+    Card.prototype.onSelect = function (source) {
+        this.data.holdable = this;
     };
     Card.prototype.inHandClick = function (hover) {
     };
@@ -622,7 +627,7 @@ var Card = /** @class */ (function (_super) {
                     data.id = null;
             }
         }
-        this.data.setHoldable(null);
+        this.data.holdable = null;
     };
     Card.prototype.drawDescription = function (x, y) {
         if (this.relatedGridObj && this.relatedGridObj.drawDescription)
@@ -819,3 +824,45 @@ var GridObjWeeds = /** @class */ (function (_super) {
     };
     return GridObjWeeds;
 }(GridObj));
+var ToolWateringCan = /** @class */ (function (_super) {
+    __extends(ToolWateringCan, _super);
+    function ToolWateringCan() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ToolWateringCan.prototype.onUseOnGrid = function (gx, gy) {
+        var water = this.data.water;
+        var gridData = this.data.grid[gx][gy];
+        if (gridData.id && water > 0 && !gridData.wasWatered) {
+            var gridObj = this.data.allGridObjects[gridData.id];
+            if (gridObj) {
+                gridObj.onWatering(gx, gy);
+                gridData.wasWatered = true;
+                this.data.water--;
+            }
+        }
+    };
+    ToolWateringCan.prototype.inHandStep = function (mouseEvents, mx, my) {
+        if (mouseEvents.justPressed)
+            this.data.holdData.data.pressTime = Date.now();
+        if (mouseEvents.justReleased && (Date.now() - this.data.holdData.data.pressTime) < 100)
+            this.release();
+        var dx = mx - this.img.w / 2;
+        var dy = my - this.img.h / 2;
+        if (mouseEvents.clicking) {
+            this.img.draw(dx + 32, dy - 25, 0);
+            // if (Math.random() < .4) {
+            var particle = {
+                x: mx + Util.randomInt(-5, 5), y: my + Util.randomInt(-5, 5),
+                vx: -1 + 2 * Math.random(), vy: .5 + Math.random(),
+                color: { r: 0, g: Util.randomInt(100, 200), b: Util.randomInt(200, 255), a: 255 },
+                life: Util.randomInt(15, 40),
+                size: 4,
+            };
+            this.data.getParticleSystem().add(particle);
+            // }
+        }
+        else
+            this.data.img.wateringCanHeld.draw(dx + 32, dy - 25, 0);
+    };
+    return ToolWateringCan;
+}(Tool));

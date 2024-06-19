@@ -47,21 +47,15 @@ const sketch = function (p: any) {
         A: 0, B: 0, C: 0, D: 0, E: 0, K: 0, Iron: 0, Calcium: 0
     };
 
+    const particleSystem: ParticleSystem = new ParticleSystem();
     let font: any;
-    let currentWeather: Weather = "sunny";
-    let currentSeason: Season = "spring";
-    let water: number = 16;
-    let timeLeft: number = 19;
-    let money: number = 100;
-    let clicking: boolean = false;
-    let justClicked: boolean = false;
-    let holdable: Holdable | null = null;
-
-    p.mousePressed = () => clicking = true;
-    p.mouseReleased = () => { justClicked = true; clicking = false };
+    let mouseEvents: MouseEvents = { clicking: false, justPressed: false, justReleased: false };
+    p.mousePressed = () => { mouseEvents.clicking = true; mouseEvents.justPressed = true; };
+    p.mouseReleased = () => { mouseEvents.clicking = false; mouseEvents.justReleased = true; };
 
     const data: Data = {
         img,
+        getParticleSystem: () => particleSystem,
 
         allWeathers, allSeasons, allVitamins,
         allCards, allTools, allGridObjects,
@@ -71,18 +65,16 @@ const sketch = function (p: any) {
         objectiveVitamins,
         currentVitamins,
 
-        getWater: () => water,
-        addWater: (x) => water += x,
+        hoverData: { hoverable: null, data: null },
+        holdData: { holdable: null, data: null },
 
-        getCurrentWeather: () => currentWeather,
-        getCurrentSeason: () => currentSeason,
+        water: 16,
+        money: 100,
 
-        getMoney: () => money,
-        addMoney: (x) => money += x,
+        currentWeather: "sunny",
+        currentSeason: "spring",
 
-        getTimeLeft: () => timeLeft,
-
-        setHoldable: x => holdable = x,
+        timeLeft: 19,
     }
 
     const defaultProps = { data, p };
@@ -203,32 +195,32 @@ const sketch = function (p: any) {
         { // WEATHER
             const weatherX = 420;
             const weatherY = 8;
-            allWeathers[currentWeather].img.draw(weatherX, weatherY);
+            allWeathers[data.currentWeather].img.draw(weatherX, weatherY);
         }
 
         { // SEASON
             const seasonX = 480;
             const seasonY = 8;
-            allSeasons[currentSeason].img.draw(seasonX, seasonY);
+            allSeasons[data.currentSeason].img.draw(seasonX, seasonY);
         }
 
         if (mx > 420 && mx < 546 && my > 8 && my < 76) {
             customInHover = () => {
                 const x = 572;
                 const y = 92;
-                const text = "Weather: " + allWeathers[currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[currentSeason].name;
+                const text = "Weather: " + allWeathers[data.currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[data.currentSeason].name;
                 WEATHER_VALUES.forEach((id: Weather, i) => {
                     const dx = x + i * 64;
                     const dy = y + 16;
                     allWeathers[id].img.draw(dx, dy);
-                    if (currentWeather === id)
+                    if (data.currentWeather === id)
                         img.select.draw(dx, dy);
                 });
                 SEASON_VALUES.forEach((id, i) => {
                     const dx = x + i * 64;
                     const dy = y + 160;
                     allSeasons[id].img.draw(dx, dy);
-                    if (currentSeason === id)
+                    if (data.currentSeason === id)
                         img.select.draw(dx, dy);
                 });
                 p.text(text, x, y);
@@ -238,7 +230,7 @@ const sketch = function (p: any) {
         { // WATER
             const waterX = 496;
             const waterY = 380;
-            for (let i = 0; i < water; i++) {
+            for (let i = 0; i < data.water; i++) {
                 img.water.draw(waterX, waterY - i * (img.water.h));
             }
         }
@@ -284,7 +276,7 @@ const sketch = function (p: any) {
         { // time
             const timeX = 552;
             const timeY = 8;
-            for (let i = 0; i < timeLeft; i++) {
+            for (let i = 0; i < data.timeLeft; i++) {
                 img.time.draw(timeX + i * (img.time.w - 4), timeY);
             }
         }
@@ -293,12 +285,12 @@ const sketch = function (p: any) {
             const timeX = 4 * 213;
             const timeY = 4 * 109 + 2;
             img.coin.draw(timeX, timeY);
-            let textOrig = "" + money;
+            let textOrig = "" + data.money;
             let text = "" + textOrig;
-            if (money < 10) text = "0" + text;
-            if (money < 100) text = "0" + text;
-            if (money < 1000) text = "0" + text;
-            if (money < 10000) text = "0" + text;
+            if (data.money < 10) text = "0" + text;
+            if (data.money < 100) text = "0" + text;
+            if (data.money < 1000) text = "0" + text;
+            if (data.money < 10000) text = "0" + text;
             p.fill(0, 0, 0, 80);
             p.text(text, timeX - p.textWidth(text) - 4, timeY + 32);
             p.fill(0, 0, 0);
@@ -332,22 +324,31 @@ const sketch = function (p: any) {
 
         // img.ui_front.draw(0, 0);
 
-        if (holdable) holdable.inHandStep(clicking, justClicked, mx, my);
+        if (data.holdData.holdable) data.holdData.holdable.inHandStep(mouseEvents, mx, my);
 
         if (customInHover) {
             customInHover();
         } else if (inHover) {
             img.select.draw(inHover.x, inHover.y);
-            if (justClicked) {
-                if (holdable) {
-                    holdable.inHandClick(inHover.hoverable);
-                } else if (inHover.hoverable.onSelect) {
-                    inHover.hoverable.onSelect(inHover.source);
-                }
-            }
+            if (mouseEvents.justReleased && !data.holdData.holdable && inHover.hoverable.onSelect)
+                inHover.hoverable.onSelect(inHover.source);
         }
 
-        justClicked = false;
+        mouseEvents.justPressed = false;
+        mouseEvents.justReleased = false;
+
+        particleSystem.step(p);
+
+        particleSystem.add({
+            color: { r: 0, g: Util.randomInt(100, 200), b: 255, a: 255 },
+            life: 50,
+            size: 4,
+            vx: Util.randomInt(1, 3),
+            vy: 10,
+            x: Math.random() * p.width,
+            y: 0,
+            // compute: (p: Particle) => { if (p.color.a) p.color.a -= 2 }
+        })
     };
 
 };

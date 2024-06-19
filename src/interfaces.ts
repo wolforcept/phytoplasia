@@ -8,6 +8,19 @@ const WEATHER_VALUES: Array<Weather> = ["sunny", "rain", "thunder", "windy", "sn
 const LOCATION_VALUES: Array<Locationn> = ["cards", "grid", "tools"];
 const VITAMIN_VALUES: Array<Vitamin> = ["A", "B", "C", "D", "E", "K", "Iron", "Calcium"];
 
+interface Color {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
+}
+
+interface MouseEvents {
+    clicking: boolean;
+    justPressed: boolean;
+    justReleased: boolean;
+}
+
 interface Image {
     img: any;
     w: number;
@@ -45,12 +58,10 @@ interface Hoverable {
     drawDetails: (x: number, y: number) => void;
     onSelect?: (source: Source) => void;
     onUse?: (source: Source, destination: Destination) => void;
-    data?: any;
 }
 
 interface Holdable {
-    inHandStep: (clicking: boolean, justClicked: boolean, mx: number, my: number) => void
-    inHandClick: (hover: Hoverable) => void
+    inHandStep: (mouseEvents: MouseEvents, mx: number, my: number) => void
 }
 
 interface Data {
@@ -71,16 +82,16 @@ interface Data {
     objectiveVitamins: { [key in Vitamin]: number },
     currentVitamins: { [key in Vitamin]: number },
 
-    getWater: () => number,
-    addWater: (x: number) => void,
+    hoverData: { hoverable: Hoverable | null, data: any },
+    holdData: { holdable: Holdable | null, data: any },
 
-    getCurrentWeather: () => Weather,
-    getCurrentSeason: () => Season,
+    water: number,
+    money: number,
 
-    getMoney: () => number,
-    addMoney: (x: number) => void,
+    currentWeather: Weather,
+    currentSeason: Season,
 
-    getTimeLeft: () => number,
+    timeLeft: number,
 
-    setHoldable: (x: Holdable | null) => void,
+    getParticleSystem: () => ParticleSystem;
 }

@@ -16,21 +16,24 @@ abstract class Tool extends Obj implements Hoverable, Holdable, ToolProps {
     }
 
     onSelect(source: Source) {
-        this.data.setHoldable(this);
+        this.data.holdData = { holdable: this, data: {} };
     }
 
-    abstract inHandStep(clicking: boolean, justClicked: boolean, mx: number, my: number): void;
-    abstract inHandClick(hover: Hoverable): void;
-
-    onUse(source: Source, destination: Destination) {
-        if (source.location === "tools" && destination.location == "grid") {
-            const { gx, gy } = destination.data;
-            this.onUseOnGrid(gx, gy);
-        }
-        this.data.setHoldable(null);
+    release() {
+        this.data.holdData = { holdable: null, data: null };
     }
 
-    onUseOnGrid(gx: number, gy: number) {
-        console.log(`Tool ${this.id}.onUseOnGrid(gx:${gx}, gy:${gy}) not defined.`);
-    }
+    abstract inHandStep(mouseEvents: MouseEvents, mx: number, my: number): void;
+
+    // onUse(source: Source, destination: Destination) {
+    //     if (source.location === "tools" && destination.location == "grid") {
+    //         const { gx, gy } = destination.data;
+    //         this.onUseOnGrid(gx, gy);
+    //     }
+    //     this.data.holdData = { holdable: null, data: null };
+    // }
+
+    // onUseOnGrid(gx: number, gy: number) {
+    //     console.log(`Tool ${this.id}.onUseOnGrid(gx:${gx}, gy:${gy}) not defined.`);
+    // }
 }

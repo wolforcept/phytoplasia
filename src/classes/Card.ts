@@ -11,11 +11,12 @@ class Card extends Obj implements Holdable, CardProps, Hoverable {
         this.relatedGridObj = props.relatedGridObj;
     }
 
-    onSelect(source: Source) {
-        this.data.setHoldable(this);
+    inHandStep(mouseEvents: MouseEvents, mx: number, my: number): void {
+
     }
 
-    inHandStep(clicking: boolean, justClicked: boolean) {
+    onSelect(source: Source) {
+        this.data.holdable = this;
     }
 
     inHandClick(hover: Hoverable) {
@@ -33,7 +34,7 @@ class Card extends Obj implements Holdable, CardProps, Hoverable {
                     data.id = null;
             }
         }
-        this.data.setHoldable(null);
+        this.data.holdable = null;
     }
 
     drawDescription(x: number, y: number) {
