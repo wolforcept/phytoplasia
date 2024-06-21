@@ -53,6 +53,9 @@ const sketch = function (p: any) {
     p.mousePressed = () => { mouseEvents.clicking = true; mouseEvents.justPressed = true; };
     p.mouseReleased = () => { mouseEvents.clicking = false; mouseEvents.justReleased = true; };
 
+    const MAX_WATER = 16;
+    const MAX_TIME = 22;
+
     const data: Data = {
         img,
         getParticleSystem: () => particleSystem,
@@ -65,16 +68,16 @@ const sketch = function (p: any) {
         objectiveVitamins,
         currentVitamins,
 
-        hoverData: { hoverable: null, data: null },
-        holdData: { holdable: null, data: null },
+        hover: null,
+        hold: null,
 
-        water: 16,
+        water: MAX_WATER,
         money: 100,
 
-        currentWeather: "sunny",
+        currentWeather: "thunder",
         currentSeason: "spring",
 
-        timeLeft: 19,
+        timeLeft: MAX_TIME,
     }
 
     const defaultProps = { data, p };
@@ -82,17 +85,62 @@ const sketch = function (p: any) {
     allGridObjects.weeds = new GridObjWeeds({ id: "weeds", name: "Weeds", img: img.grass30, ...defaultProps });
     allGridObjects.rock = new GridObjRock({ id: "rock", name: "Rocks", img: img.rocks1, ...defaultProps });
 
-    allGridObjects.carrots = GridObjCooldownFruit.create("carrots", "Carrots", img.plant2, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.strawberries = GridObjCooldownFruit.create("strawberries", "Carrots", img.plant5, ["fruit", "berry"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.potatoes = GridObjCooldownFruit.create("potatoes", "Potatoes", img.potato, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.tomatoes = GridObjCooldownFruit.create("tomatoes", "Tomatoes", img.tomato, ["vegetable", "fruit"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.carrots = GridObjCooldownFruit.create("carrots", "Carrots", img.plant2, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.strawberries = GridObjCooldownFruit.create("strawberries", "Carrots", img.plant5, ["fruit", "berry"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.potatoes = GridObjCooldownFruit.create("potatoes", "Potatoes", img.potato, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.tomatoes = GridObjCooldownFruit.create("tomatoes", "Tomatoes", img.tomato, ["vegetable", "fruit"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.parsnip = GridObjCooldownFruit.create("parsnip", "Parsnip", img.parsnip, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
+    // allGridObjects.cauliflower = GridObjCooldownFruit.create("cauliflower", "Cauliflower", img.cauliflower, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
+
+    allGridObjects.parsnip /*         */ = GridObjCooldownFruit.create("parsnip"/*          */, "Parsnip"/*          */, img.parsnip /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.cauliflower/*      */ = GridObjCooldownFruit.create("cauliflower"/*      */, "Cauliflower"/*      */, img.cauliflower/* */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.garlic/*           */ = GridObjCooldownFruit.create("garlic"/*           */, "Garlic"/*           */, img.garlic/*      */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.rhubarb /*         */ = GridObjCooldownFruit.create("rhubarb" /*         */, "Rhubarb "/*         */, img.rhubarb /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tomato/*           */ = GridObjCooldownFruit.create("tomato"/*           */, "Tomato"/*           */, img.tomato/*      */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.hotpepper/*        */ = GridObjCooldownFruit.create("hotpepper"/*        */, "Hotpepper"/*        */, img.hotpepper/*   */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.raddish /*         */ = GridObjCooldownFruit.create("raddish"/*          */, "Raddish "/*         */, img.raddish /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.starfruit/*        */ = GridObjCooldownFruit.create("starfruit"/*        */, "Starfruit"/*        */, img.starfruit/*   */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.eggplant/*         */ = GridObjCooldownFruit.create("eggplant"/*         */, "Eggplant"/*         */, img.eggplant/*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.pumpkin/*          */ = GridObjCooldownFruit.create("pumpkin"/*          */, "Pumpkin"/*          */, img.pumpkin/*     */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.yam/*              */ = GridObjCooldownFruit.create("yam"/*              */, "Yam"/*              */, img.yam/*         */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.beet/*             */ = GridObjCooldownFruit.create("beet"/*             */, "Beet"/*             */, img.beet/*        */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.ancientfruit/*     */ = GridObjCooldownFruit.create("ancientfruit"/*     */, "Ancientfruit"/*     */, img.ancientfruit/**/, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tulip/*            */ = GridObjCooldownFruit.create("tulip"/*            */, "Tulip"/*            */, img.tulip/*       */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.poppy/*            */ = GridObjCooldownFruit.create("poppy"/*            */, "Poppy"/*            */, img.poppy/*       */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.sunflower/*        */ = GridObjCooldownFruit.create("sunflower"/*        */, "Sunflower"/*        */, img.sunflowwer/*  */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.sweetgem/*         */ = GridObjCooldownFruit.create("sweetgem"/*         */, "Sweetgem"/*         */, img.sweetgem/*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.rice/*             */ = GridObjCooldownFruit.create("rice"/*             */, "Rice"/*             */, img.rice/*        */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
 
     Object.keys(allGridObjects).forEach(id => {
         const card = allGridObjects[id].makeCard();
         if (card) allCards[id] = card;
     });
 
+    // const everything = { ...allCards, ...allGridObjects, ...allTools, ...allSeasons, ...allVitamins, ...allWeathers };
+
     allTools.wateringCan = new ToolWateringCan({ id: "wateringCan", name: "Watering Can", img: img.wateringCan, ...defaultProps });
+
+    function endTurn() {
+        data.water = MAX_WATER;
+        data.timeLeft--;
+        if (data.timeLeft === 0) {
+            data.timeLeft = MAX_TIME;
+            endSeason();
+        }
+        if (Math.random() < .25) {
+            data.currentWeather = randomFromArray(WEATHER_VALUES) as Weather;
+        }
+    }
+
+    function endSeason() {
+        /**/ if (data.currentSeason === "spring") data.currentSeason = "summer";
+        else if (data.currentSeason === "summer") data.currentSeason = "autumn";
+        else if (data.currentSeason === "autumn") data.currentSeason = "winter";
+        else if (data.currentSeason === "winter") data.currentSeason = "spring";
+    }
+
+    // █▀▄ █▀▀
+    // █▀  ▄██
 
     p.preload = function () {
         font = p.loadFont('assets/font.ttf');
@@ -100,35 +148,38 @@ const sketch = function (p: any) {
         Object.keys(img).forEach(name => {
             const i = img[name];
             i.img = p.loadImage(i.path, () => {
-                i.w = i.img.width * 4;
-                i.h = i.img.height * 4;
+                i.w = i.w ?? i.img.width * 4;
+                i.h = i.h ?? i.img.height * 4;
                 i.draw = (x: number, y: number, imgIndex?: number) => {
-                    if (imgIndex === undefined)
+                    if (imgIndex === undefined) {
                         p.image(i.img, x, y, i.w, i.h);
-                    else {
-                        if (imgIndex < 0) imgIndex += Math.floor(i.img.width / i.img.height)
+                    } else if (i.n === undefined) {
+                        if (imgIndex < 0) imgIndex += Math.floor(i.img.width / i.img.height);
                         p.image(i.img, x, y, i.h, i.h, imgIndex * i.img.height, 0, i.img.height, i.img.height);
+                    } else {
+                        if (imgIndex < 0) imgIndex += i.n;
+                        p.image(i.img, x, y, i.w * 4, i.h * 4, i.sx + imgIndex * i.w, i.sy, i.w, i.h);
                     }
                 }
             });
         });
 
-        [allGridObjects, allCards, allTools]
-            .forEach(all => Object.keys(all).forEach(id => {
-                all[id].id = id;
-            }));
+        // [allGridObjects, allCards, allTools]
+        //     .forEach(all => Object.keys(all).forEach(id => {
+        //         all[id].id = id;
+        //     }));
     }
 
     p.setup = function () {
         p.createCanvas(img.ui_back.w, img.ui_back.h);
         p.noSmooth();
+        p.smallText = () => p.textSize(24);
+        p.largeText = () => p.textSize(32);
         p.textFont(font);
         p.textSize(32);
         p.textLeading(24);
 
-        let spots1 = [];
-        let spots2 = [];
-        let spots3 = [];
+        let spots1 = []; let spots2 = []; let spots3 = [];
         for (let dx = 0; dx < gridSize; dx++)
             for (let dy = 0; dy < gridSize; dy++) {
                 if (dx < 1 || dy < 1) { spots1.push({ x: dx, y: dy }); continue; }
@@ -145,16 +196,33 @@ const sketch = function (p: any) {
         spots3.splice(0, nrOfWeeds[2]).forEach(({ x, y }) => grid[x][y] = { id: "weeds" });
         spots3.splice(0, nrOfRocks[2]).forEach(({ x, y }) => grid[x][y] = { id: "rock" });
 
-        cards[0] = { id: "tomatoes", stock: 10 };
-        cards[1] = { id: "potatoes", stock: 10 };
-        cards[2] = { id: "carrots", stock: 10 };
-        cards[3] = { id: "strawberries", stock: 10 };
+        cards[0] = { id: "parsnip" /*         */, stock: 10 };
+        cards[1] = { id: "cauliflower"/*      */, stock: 10 };
+        cards[2] = { id: "garlic"/*           */, stock: 10 };
+        cards[3] = { id: "rhubarb" /*         */, stock: 10 };
+        cards[4] = { id: "tomato"/*           */, stock: 10 };
+        cards[5] = { id: "hotpepper"/*        */, stock: 10 };
+        cards[6] = { id: "raddish" /*         */, stock: 10 };
+        cards[7] = { id: "starfruit"/*        */, stock: 10 };
+        // cards[8] = { id: "eggplant"/*         */, stock: 10 };
+        // cards[9] = { id: "pumpkin"/*          */, stock: 10 };
+        // cards[10] = { id: "yam"/*              */, stock: 10 };
+        // cards[11] = { id: "beet"/*             */, stock: 10 };
+        // cards[12] = { id: "ancientfruit"/*     */, stock: 10 };
+        // cards[13] = { id: "tulip"/*            */, stock: 10 };
+        // cards[14] = { id: "poppy"/*            */, stock: 10 };
+        // cards[15] = { id: "sunflower"/*       */, stock: 10 };
+        // cards[16] = { id: "sweetgem"/*         */, stock: 10 };
+        // cards[17] = { id: "rice"/*             */, stock: 10 };
+
     };
+
+    let nextThunder = 100;
 
     p.draw = function () {
         const mx = p.mouseX;
         const my = p.mouseY;
-        let inHover: { hoverable: Hoverable, x: number, y: number, source: Source } | null = null;
+        // let inHover: { hoverable: Hoverable, x: number, y: number, source: Source } | null = null;
         let customInHover: null | (() => void) = null;
 
         img.ui_back.draw(0, 0);
@@ -168,6 +236,7 @@ const sketch = function (p: any) {
                     const id = grid[gx][gy].id;
                     const dx = gridX + gx * 64;
                     const dy = gridY + gy * 64;
+                    const source: Source = { location: "grid", x: dx, y: dy, data: { gx, gy } };
 
                     if (grid[gx][gy]?.wasWatered)
                         img.wetDirt.draw(dx, dy);
@@ -183,10 +252,10 @@ const sketch = function (p: any) {
                         throw new Error(id + " grid obj error drawing.");
                     }
 
-                    obj.draw(gx, gy, dx, dy);
+                    obj.draw(dx, dy, source);
 
                     if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                        inHover = { hoverable: obj, x: dx, y: dy, source: { location: "grid", data: { gx, gy } } };
+                        data.hover = { obj, source };
                     }
                 }
             }
@@ -202,28 +271,44 @@ const sketch = function (p: any) {
             const seasonX = 480;
             const seasonY = 8;
             allSeasons[data.currentSeason].img.draw(seasonX, seasonY);
+
+            if (mx > 420 && mx < 546 && my > 8 && my < 76) {
+                customInHover = () => {
+                    const x = 572;
+                    const y = 92;
+                    const text = "Weather: " + allWeathers[data.currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[data.currentSeason].name;
+                    WEATHER_VALUES.forEach((id: Weather, i) => {
+                        const dx = x + i * 64;
+                        const dy = y + 16;
+                        allWeathers[id].img.draw(dx, dy);
+                        if (data.currentWeather === id)
+                            img.select.draw(dx, dy);
+                    });
+                    SEASON_VALUES.forEach((id, i) => {
+                        const dx = x + i * 64;
+                        const dy = y + 160;
+                        allSeasons[id].img.draw(dx, dy);
+                        if (data.currentSeason === id)
+                            img.select.draw(dx, dy);
+                    });
+                    p.text(text, x, y);
+                }
+            }
         }
 
-        if (mx > 420 && mx < 546 && my > 8 && my < 76) {
-            customInHover = () => {
-                const x = 572;
-                const y = 92;
-                const text = "Weather: " + allWeathers[data.currentWeather].name + "\n\n\n\n\n\nSeason: " + allSeasons[data.currentSeason].name;
-                WEATHER_VALUES.forEach((id: Weather, i) => {
-                    const dx = x + i * 64;
-                    const dy = y + 16;
-                    allWeathers[id].img.draw(dx, dy);
-                    if (data.currentWeather === id)
-                        img.select.draw(dx, dy);
-                });
-                SEASON_VALUES.forEach((id, i) => {
-                    const dx = x + i * 64;
-                    const dy = y + 160;
-                    allSeasons[id].img.draw(dx, dy);
-                    if (data.currentSeason === id)
-                        img.select.draw(dx, dy);
-                });
-                p.text(text, x, y);
+        { // END TURN BUTTON
+            const buttonX = 4 * 182;
+            const buttonY = 4 * 106;
+
+            if (mx > buttonX && my > buttonY && mx < buttonX + img.endTurnButton.w * 4 && my < buttonY + img.endTurnButton.h * 4) {
+                if (mouseEvents.clicking)
+                    img.endTurnButton.draw(buttonX, buttonY, 2);
+                else
+                    img.endTurnButton.draw(buttonX, buttonY, 0);
+                if (mouseEvents.justReleased)
+                    endTurn();
+            } else {
+                img.endTurnButton.draw(buttonX, buttonY, 1);
             }
         }
 
@@ -249,10 +334,12 @@ const sketch = function (p: any) {
                 }
                 const dx = cardsX + i * 64;
                 const dy = cardsY;
-                card.img.draw(dx, dy, -1);
+                const source: Source = { location: "cards", x: dx, y: dy, data: { cardIndex: i } };
+                card.draw(dx, dy, source);
 
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = { hoverable: card, x: dx, y: dy, source: { location: "cards", data: { cardIndex: i } } };
+                    data.hover = { obj: card, source };
+                    // inHover = { hoverable: card, x: dx, y: dy, source: { location: "cards", data: { cardIndex: i } } };
                 }
             }
         }
@@ -268,7 +355,8 @@ const sketch = function (p: any) {
                 tool.img.draw(dx, dy);
 
                 if (mx > dx && mx < dx + 64 && my > dy && my < dy + 64) {
-                    inHover = { hoverable: tool, x: dx, y: dy, source: { location: "tools", data: {} } };
+                    data.hover = { obj: tool, source: { location: "tools", x: dx, y: dy, data: {} } };
+                    // inHover = { hoverable: tool, x: dx, y: dy, source: { location: "tools", data: {} } };
                 }
             }
         }
@@ -282,23 +370,24 @@ const sketch = function (p: any) {
         }
 
         { // MONEY
-            const timeX = 4 * 213;
-            const timeY = 4 * 109 + 2;
-            img.coin.draw(timeX, timeY);
+            const moneyX = 4 * 167;
+            const moneyY = 4 * 109 + 2;
+            img.coin.draw(moneyX, moneyY);
             let textOrig = "" + data.money;
+            if (data.money > 99999) textOrig = "99999";
             let text = "" + textOrig;
             if (data.money < 10) text = "0" + text;
             if (data.money < 100) text = "0" + text;
             if (data.money < 1000) text = "0" + text;
             if (data.money < 10000) text = "0" + text;
             p.fill(0, 0, 0, 80);
-            p.text(text, timeX - p.textWidth(text) - 4, timeY + 32);
+            p.text(text, moneyX - p.textWidth(text) - 4, moneyY + 32);
             p.fill(0, 0, 0);
-            p.text(textOrig, timeX - p.textWidth(textOrig) - 4, timeY + 32);
+            p.text(textOrig, moneyX - p.textWidth(textOrig) - 4, moneyY + 32);
         }
 
         { // NEXT OBJECTIVES
-            if (!inHover && !customInHover) {
+            if (!data.hover && !customInHover) {
                 const objectivesX = 572;
                 const objectivesY = 92;
                 p.text("Season\nObjectives:", objectivesX, objectivesY);
@@ -324,31 +413,68 @@ const sketch = function (p: any) {
 
         // img.ui_front.draw(0, 0);
 
-        if (data.holdData.holdable) data.holdData.holdable.inHandStep(mouseEvents, mx, my);
+        if (data.hold) data.hold.holdable.inHandStep(data.hold, mouseEvents, mx, my);
 
         if (customInHover) {
             customInHover();
-        } else if (inHover) {
-            img.select.draw(inHover.x, inHover.y);
-            if (mouseEvents.justReleased && !data.holdData.holdable && inHover.hoverable.onSelect)
-                inHover.hoverable.onSelect(inHover.source);
+        } else if (data.hover) {
+            img.select.draw(data.hover.source.x, data.hover.source.y);
+            data.hover.obj.drawDetails(data.hover.source);
+            if (mouseEvents.justReleased && !data.hold && data.hover.obj.onSelect)
+                data.hover.obj.onSelect(data.hover.source);
         }
+
+        data.hover = null;
 
         mouseEvents.justPressed = false;
         mouseEvents.justReleased = false;
 
+
+        if (data.currentWeather === "thunder") {
+            nextThunder--;
+            if (nextThunder <= 0) {
+                nextThunder = 75 + Math.random() * 250;
+                particleSystem.add({
+                    size: 1 + 2 * Math.random(),
+                    color: { r: 255, g: 255, b: 255, a: 255 },
+                    image: img.thunderbolt,
+                    life: 30,
+                    vx: 0, vy: 0,
+                    x: Math.random() * p.width - 100,
+                    y: 0,
+                    compute: (p: Particle) => { if (p.color.a) p.color.a -= 10 }
+                })
+            }
+        }
+
+        if (data.currentWeather === "rain" || data.currentWeather === "thunder")
+            particleSystem.add({
+                color: { r: 0, g: Util.randomInt(100, 200), b: 255, a: 255 },
+                life: 50,
+                vx: Util.randomInt(1, 3),
+                vy: 10,
+                x: Math.random() * p.width,
+                y: 0,
+                // compute: (p: Particle) => { if (p.color.a) p.color.a -= 2 }
+            })
+
+        if (data.currentWeather === "snowy" && Math.random() < .33)
+            particleSystem.add({
+                extraData: { seed1: Math.random() * 100, seed2: Math.random() * 100 },
+                color: { r: 255, g: 255, b: 255, a: 255 },
+                life: 500,
+                vx: 0,
+                vy: Util.randomInt(1, 2),
+                x: Math.random() * p.width,
+                y: 0,
+                compute: (p: Particle) => {
+                    if (p.extraData.seed1 && p.color.a) p.color.a -= p.extraData.seed1 / 30;
+                    if (p.extraData.seed2) p.x += p.extraData.seed2 / 40 * Math.cos(p.extraData.seed2 + Date.now() / 1000);
+                }
+            });
+
         particleSystem.step(p);
 
-        particleSystem.add({
-            color: { r: 0, g: Util.randomInt(100, 200), b: 255, a: 255 },
-            life: 50,
-            size: 4,
-            vx: Util.randomInt(1, 3),
-            vy: 10,
-            x: Math.random() * p.width,
-            y: 0,
-            // compute: (p: Particle) => { if (p.color.a) p.color.a -= 2 }
-        })
     };
 
 };

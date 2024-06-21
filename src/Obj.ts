@@ -15,6 +15,7 @@ class Obj implements ObjProps {
     img: any;
 
     constructor(props: ObjProps) {
+        console.log(props.id);
         this.id = props.id;
         this.data = props.data;
         this.p = props.p;
@@ -22,14 +23,14 @@ class Obj implements ObjProps {
         this.img = props.img;
     }
 
-    drawDescription(x: number, y: number) {
+    drawDescription(x: number, y: number, source: Source) {
         this.p.text(x + 20, y, this.name);
     }
 
-    draw(gx: number, gy: number, x: number, y: number) {
+    draw(x: number, y: number, source: Source) {
     }
 
-    drawDetails() {
+    drawDetails(source: Source) {
         const cardTextX = 572;
         const cardTextY = 92;
         const cardImageX = this.p.width - 64 - 16;
@@ -38,6 +39,10 @@ class Obj implements ObjProps {
         this.img.draw(cardImageX, cardImageY, -1);
         this.p.text(this.name, cardTextX, cardTextY);
         if (this.drawDescription)
-            this.drawDescription(cardTextX, cardTextY + 80);
+            this.drawDescription(cardTextX, cardTextY + 80, source);
+    }
+
+    onSelect(source: Source) {
+
     }
 }

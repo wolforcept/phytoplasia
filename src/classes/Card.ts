@@ -1,44 +1,73 @@
 interface CardProps extends ObjProps {
+    costs: CardCost;
     relatedGridObj: GridObj;
 }
 
-class Card extends Obj implements Holdable, CardProps, Hoverable {
+class Card extends Obj implements Holdable, CardProps {
 
+    costs: CardCost;
     relatedGridObj: GridObj;
 
     constructor(props: CardProps) {
         super(props);
         this.relatedGridObj = props.relatedGridObj;
+        this.costs = props.costs;
     }
 
-    inHandStep(mouseEvents: MouseEvents, mx: number, my: number): void {
-
+    public reduceStock(cardIndex: number) {
+        this.data.cards[cardIndex].stock--;
     }
 
-    onSelect(source: Source) {
-        this.data.holdable = this;
-    }
-
-    inHandClick(hover: Hoverable) {
+    public onUse(source: Source, destination: Destination): void {
 
     }
 
-    onUse(source: Source, destination: Destination) {
-        if (destination.location === "grid") {
-            const data = this.data.cards[source.data.cardIndex];
-            if (data.id && data.stock > 0) {
-
-                this.relatedGridObj.putOnGrid(source, destination);
+    // implement from holdable
+    inHandStep(hold: HoldData, mouseEvents: MouseEvents, mx: number, my: number): void {
+        this.img.draw(mx - 16, my - 64 - 16, 0);
+        const hoverSource = this.data.hover?.source;
+        if (mouseEvents.justReleased) {
+            if (hoverSource?.location === "grid" && this.canAfford()) {
+                this.onUse(hold.source, hoverSource);
+                const data = this.data.cards[hold.source.data.cardIndex];
                 data.stock--;
                 if (data.stock <= 0)
                     data.id = null;
             }
+            this.data.hold = null;
         }
-        this.data.holdable = null;
     }
 
-    drawDescription(x: number, y: number) {
-        if (this.relatedGridObj && this.relatedGridObj.drawDescription)
-            this.relatedGridObj.drawDescription(x, y);
+    override onSelect(source: Source) {
+        this.data.hold = { holdable: this, source, data: {} };
     }
+
+    override draw(x: number, y: number, source: Source): void {
+        this.img.draw(x, y, 0);
+    }
+
+    override drawDetails(source: Source): void {
+        const data = this.data.cards[source.data.cardIndex];
+        const cardTextX = 572;
+        const cardTextY = 92;
+        const cardImageX = this.p.width - 64 - 16;
+        // const cardImageX = 720 + 60;
+        const cardImageY = 64;
+        this.img.draw(cardImageX, cardImageY, -1);
+        this.p.text(this.name + "(x" + data.stock + ")", cardTextX, cardTextY);
+        this.drawDescription(cardTextX, cardTextY + 80, source);
+    }
+
+    override drawDescription(x: number, y: number, source: Source) {
+        if (this.relatedGridObj && this.relatedGridObj.drawDescription)
+            this.relatedGridObj.drawDescription(x, y, source);
+    }
+
+    private canAfford() {
+        if (!this.costs.money || this.data.money >= this.costs.money) return true;
+        if (!this.costs.water || this.data.water >= this.costs.water) return true;
+        if (!this.costs.testOtherCosts || this.costs.testOtherCosts()) return true;
+        return false;
+    }
+
 }

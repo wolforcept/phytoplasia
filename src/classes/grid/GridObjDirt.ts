@@ -7,4 +7,7 @@ class GridObjDirt extends GridObj {
     drawDescription(x: number, y: number) {
         this.p.text("Usable soil.", x, y);
     }
+
+    onWatering: undefined;
+
 }

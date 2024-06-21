@@ -1,28 +1,3 @@
-// class GridObjSeeds extends GridObj {
-//     constructor(data, p, name, img) {
-//         super(data, p, name, img, ["seeds"]);
-//     }
-//     drawDescription(x, y) {
-//         this.p.text(`Every ${this.maxCooldown} turns:`, x, y);
-//     }
-//     onWatering(gx, gy) {
-//         const gridData = this.data.grid[gx][gy];
-//         console.log(gridData);
-//         if (gridData) {
-//             gridData.timeLeft--;
-//             // const gridObj = this.data.allGridObjects[gridData.id];
-//             // if (gridObj && gridObj.onWatering) {
-//             // }
-//         }
-//         console.log("on wartering")
-//     }
-//     draw(gx, gy, x, y) {
-//         if (this.data.grid[gx][gy].wasWatered)
-//             this.data.img.wetDirt.draw(x, y)
-//         this.img.draw(x, y)
-//     }
-// }
-
 interface CardCost {
     water?: number;
     money?: number;
@@ -31,14 +6,15 @@ interface CardCost {
 }
 
 interface GridObjCardProps extends GridObjProps {
-    cost: CardCost;
+    costs: CardCost;
 }
 
-class GridObjCard extends GridObj implements GridObjCardProps {
-    cost: CardCost;
+abstract class GridObjCard extends GridObj implements GridObjCardProps {
+    costs: CardCost;
 
     constructor(props: GridObjCardProps) {
         super(props);
-        this.cost = props.cost;
+        this.costs = props.costs;
     }
+
 }

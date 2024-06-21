@@ -7,4 +7,6 @@ class GridObjRock extends GridObj {
     drawDescription(x: number, y: number) {
         this.p.text("Remove with\npickaxe.", x, y);
     }
+    
+    onWatering: undefined;
 }

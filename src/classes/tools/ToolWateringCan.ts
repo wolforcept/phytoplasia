@@ -1,29 +1,37 @@
 class ToolWateringCan extends Tool {
 
-    onUseOnGrid(gx: number, gy: number) {
-        const water = this.data.water;
-        const gridData = this.data.grid[gx][gy];
-        if (gridData.id && water > 0 && !gridData.wasWatered) {
-            const gridObj = this.data.allGridObjects[gridData.id];
-            if (gridObj) {
-                gridObj.onWatering(gx, gy);
-                gridData.wasWatered = true;
-                this.data.water--;
-            }
-        }
-    }
+    inHandStep(hold: HoldData, mouseEvents: MouseEvents, mx: number, my: number): void {
 
-    inHandStep(mouseEvents: MouseEvents, mx: number, my: number): void {
+        const hoverData = this.data.hover;
+        const holdData = hold.data;
 
         if (mouseEvents.justPressed)
-            this.data.holdData.data.pressTime = Date.now();
+            holdData.pressTime = Date.now();
 
-        if (mouseEvents.justReleased && (Date.now() - this.data.holdData.data.pressTime) < 100)
+        const diff = (Date.now() - holdData.pressTime);
+
+        if (mouseEvents.justReleased && diff < 100)
             this.release();
 
         const dx = mx - this.img.w / 2;
         const dy = my - this.img.h / 2;
-        if (mouseEvents.clicking) {
+
+        const hoverSource = hoverData?.source ?? null;
+        const gridObjId = hoverSource && hoverSource.data.gx && hoverSource.data.gy ? this.data.grid[hoverSource.data.gx][hoverSource.data.gy]?.id : null;
+        const gridObj = gridObjId ? this.data.allGridObjects[gridObjId] : null;
+        if (mouseEvents.clicking && gridObj?.onWatering && this.data.water > 0 && hoverSource?.location === "grid") {
+
+            const tar = hoverSource.x + "," + hoverSource.y;
+            if (holdData.tar !== tar) {
+                holdData.tar = tar;
+                holdData.pressTime = Date.now();
+
+            }
+            if (diff > 1000) {
+                holdData.pressTime = Date.now();
+                gridObj.onWatering(hoverSource);
+            }
+
             this.img.draw(dx + 32, dy - 25, 0);
             // if (Math.random() < .4) {
             const particle: Particle = {
@@ -35,9 +43,11 @@ class ToolWateringCan extends Tool {
             }
             this.data.getParticleSystem().add(particle);
             // }
-        }
-        else
+
+        } else {
             this.data.img.wateringCanHeld.draw(dx + 32, dy - 25, 0);
+            holdData.tar = null;
+        }
     }
 
 }

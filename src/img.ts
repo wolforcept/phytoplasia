@@ -3,6 +3,7 @@ const img: any = {
     ui_back: { path: 'assets/ui_back.png' },
     ui_front: { path: 'assets/ui_front.png' },
     select: { path: 'assets/select.png' },
+    endTurnButton: { path: 'assets/end_turn_button.png', w: 42, h: 18, sx: 0, sy: 0, n: 3 },
 
     time: { path: 'assets/time.png' },
     water: { path: 'assets/water.png' },
@@ -34,6 +35,7 @@ const img: any = {
     sunny_with_clouds: { path: 'assets/weather/sunny_with_clouds.png' },
     thunder: { path: 'assets/weather/thunder.png' },
     windy: { path: 'assets/weather/windy.png' },
+    thunderbolt: { path: 'assets/thunderbolt.png' },
 
     spring: { path: 'assets/seasons/spring.png' },
     summer: { path: 'assets/seasons/summer.png' },
@@ -42,10 +44,30 @@ const img: any = {
 
     seeds: { path: 'assets/plants/seeds.png' },
 
-    tomato: { path: 'assets/vegetables/tomato.png' },
+    // tomato: { path: 'assets/vegetables/tomato.png' },
     corn: { path: 'assets/vegetables/corn.png' },
     turnip: { path: 'assets/vegetables/turnip.png' },
     potato: { path: 'assets/vegetables/potato.png' },
+
+    parsnip: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 0 * 32, n: 6 },
+    cauliflower: { path: 'assets/crops.png', /*   */ w: 16, h: 32, sx: 0, sy: 1 * 32, n: 7 },
+    garlic: { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 2 * 32, n: 6 },
+    rhubarb: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 3 * 32, n: 7 },
+    tomato: { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 4 * 32, n: 7 },
+    hotpepper: { path: 'assets/crops.png', /*     */ w: 16, h: 32, sx: 0, sy: 5 * 32, n: 7 },
+    raddish: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 6 * 32, n: 6 },
+    starfruit: { path: 'assets/crops.png', /*     */ w: 16, h: 32, sx: 0, sy: 7 * 32, n: 7 },
+    eggplant: { path: 'assets/crops.png', /*      */ w: 16, h: 32, sx: 0, sy: 8 * 32, n: 7 },
+    pumpkin: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 9 * 32, n: 7 },
+    yam: { path: 'assets/crops.png', /*           */ w: 16, h: 32, sx: 0, sy: 10 * 32, n: 6 },
+    beet: { path: 'assets/crops.png', /*          */ w: 16, h: 32, sx: 0, sy: 11 * 32, n: 6 },
+    ancientfruit: { path: 'assets/crops.png', /*  */ w: 16, h: 32, sx: 0, sy: 12 * 32, n: 7 },
+    tulip: { path: 'assets/crops.png', /*         */ w: 16, h: 32, sx: 0, sy: 13 * 32, n: 7 },
+    poppy: { path: 'assets/crops.png', /*         */ w: 16, h: 32, sx: 0, sy: 14 * 32, n: 7 },
+    sunflower: { path: 'assets/crops.png', /*     */ w: 16, h: 32, sx: 0, sy: 15 * 32, n: 6 },
+    sweetgem: { path: 'assets/crops.png', /*      */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 7 },
+    rice: { path: 'assets/crops.png', /*          */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 6 },
 
     plant1: { path: 'assets/plants/1.png' },
     plant2: { path: 'assets/plants/2.png' },

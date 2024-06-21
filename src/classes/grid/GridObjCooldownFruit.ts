@@ -6,26 +6,24 @@ interface GridObjCooldownFruitProps extends GridObjCardProps {
     cooldown: number;
 }
 
+interface CooldownFruitGridData extends GridData {
+
+}
+
 class GridObjCooldownFruit extends GridObjCard implements GridObjCooldownFruitProps {
 
-    static create(
+    static create = (
         id: string, name: string, img: any, tags: Array<string>,
         cost: number,
-        growTime: number,
-        produces: Produces,
-        cooldown: number,
+        growTime: number, produces: Produces, cooldown: number,
         defaultProps: { p: any, data: Data }
-    ): GridObjCooldownFruit {
-        return new GridObjCooldownFruit({
-            id, name, img,
-            cost: { money: cost },
-            cooldown,
-            growTime,
-            produces,
-            tags,
-            ...defaultProps
-        })
-    }
+    ) => new GridObjCooldownFruit({
+        id, name, img,
+        costs: { money: cost },
+        growTime, produces, cooldown,
+        tags,
+        ...defaultProps
+    });
 
     growTime: number;
     produces: Produces;
@@ -38,60 +36,63 @@ class GridObjCooldownFruit extends GridObjCard implements GridObjCooldownFruitPr
         this.cooldown = props.cooldown;
     }
 
-    makeCard(): Card {
+    override makeCard(): Card {
         const card = new Card({
             id: this.id + "Card",
             data: this.data,
             p: this.p,
             name: this.name,
             img: this.img,
-            relatedGridObj: this
+            relatedGridObj: this,
+            costs: this.costs
         });
-        card.draw = (gx: number, gy: number, x: number, y: number) => {
-            // if (this.data.grid[gx][gy].wasWatered)
-            //     this.data.img.wetDirt.draw(x, y)
-            this.img.draw(x, y, 0);
-        };
+        card.draw = (x: number, y: number, source: Source) => {
+            this.img.draw(x, y - 64, -1);
+        }
+        card.onUse = (source: Source, destination: Destination) => {
+            this.putOnGrid(source, destination);
+        }
         return card;
     }
 
-    override draw(gx: number, gy: number, x: number, y: number) {
-        // if (this.data.grid[gx][gy].wasWatered)
-        //     this.data.img.wetDirt.draw(x, y)
-        this.img.draw(x, y, 0);
+    override draw(x: number, y: number, source: Source) {
+        if (this.data.grid[source.data.gx][source.data.gy].wasWatered)
+            this.data.img.wetDirt.draw(x, y)
+        this.img.draw(x, y - 64, 0);
     }
 
-    override putOnGrid(source: Source, destination: Destination) {
-        const cardIndex = source.data;
+    private putOnGrid(source: Source, destination: Destination) {
         const { gx, gy } = destination.data;
-        this.data.grid[gx][gy] = { id: this.id, growTime: this.growTime };
-        this.data.cards[cardIndex].id = null;
+        this.data.grid[gx][gy] = { id: this.id, growTime: this.growTime, stage: 0 } as CooldownFruitGridData;
+        const cardIndex = source.data.cardIndex;
+        const cardId = this.data.cards[cardIndex].id;
+        if (cardId) this.data.allCards[cardId].reduceStock(cardIndex);
     }
 
     drawDescription(x: number, y: number) {
-        super.drawDescription(x, y);
-        // this.p.text(x, y, );
-        this.p.text(`Every ${this.cooldown} turns:`, x, y);
+        const tagsText = this.tags.reduce((a, b) => a + "," + b, "").substring(1);
+
+        let dy = y - 50;
+        this.p.smallText();
+        this.p.fill(0, 0, 0, 150);
+        this.p.text(tagsText, x, dy);
+        this.p.largeText();
+
+        this.p.fill(0, 0, 0);
+        dy += 64;
+        this.p.text(`Every ${this.cooldown} turns:`, x, dy);
         VITAMIN_VALUES.filter(x => this.produces[x]).forEach((v: Vitamin) => {
             const text = `+${this.produces[v]}`;
-            this.p.text(text, x, y + 32);
-            this.data.allVitamins[v].img.draw(x + this.p.textWidth(text), y + 4);
+            this.p.text(text, x, dy + 32);
+            this.data.allVitamins[v].img.draw(x + this.p.textWidth(text), dy + 4);
         });
     }
 
-    onWatering(gx: number, gy: number) {
-        // const gridData = this.data.grid[gx][gy];
-        // if(gridData && !gridData.wasWatered)
-        // gr
-        // console.log(gridData);
-        // if (gridData) {
-        // gridData.stage = gridData.stage ? gridData.stage + 1 : 1;
-        // const gridObj = this.data.allGridObjects[gridData.id];
-        // if (gridObj && gridObj.onWatering) {
-        // }
-        // }
-
-        console.log("on wartering");
+    onWatering(source: Source) {
+        const gridObjData = this.data.grid[source.data.gx][source.data.gy];
+        if (this.data.water > 0 && !gridObjData.wasWatered) {
+            this.data.water--;
+            gridObjData.wasWatered = true;
+        }
     }
-
 }

@@ -2,38 +2,27 @@ interface ToolProps extends ObjProps {
 
 }
 
-abstract class Tool extends Obj implements Hoverable, Holdable, ToolProps {
+abstract class Tool extends Obj implements Holdable, ToolProps {
 
     constructor(props: ToolProps) {
         super(props);
     }
 
-    drawDescription(x: number, y: number) {
-        super.drawDescription(x, y);
+    override drawDescription(x: number, y: number, source: Source) {
+        super.drawDescription(x, y, source);
         this.p.text(`On use:`, x, y);
         this.p.text(`+`, x + 16, y + 40);
         // this.data.allVitamins[v].img.draw(x + this.p.textWidth(text), y + 4)
     }
 
-    onSelect(source: Source) {
-        this.data.holdData = { holdable: this, data: {} };
+    override onSelect(source: Source) {
+        this.data.hold = { holdable: this, source, data: {} };
     }
 
     release() {
-        this.data.holdData = { holdable: null, data: null };
+        this.data.hold = null;
     }
 
-    abstract inHandStep(mouseEvents: MouseEvents, mx: number, my: number): void;
+    abstract inHandStep(holdData: HoldData, mouseEvents: MouseEvents, mx: number, my: number): void;
 
-    // onUse(source: Source, destination: Destination) {
-    //     if (source.location === "tools" && destination.location == "grid") {
-    //         const { gx, gy } = destination.data;
-    //         this.onUseOnGrid(gx, gy);
-    //     }
-    //     this.data.holdData = { holdable: null, data: null };
-    // }
-
-    // onUseOnGrid(gx: number, gy: number) {
-    //     console.log(`Tool ${this.id}.onUseOnGrid(gx:${gx}, gy:${gy}) not defined.`);
-    // }
 }

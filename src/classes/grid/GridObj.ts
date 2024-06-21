@@ -2,7 +2,7 @@ interface GridObjProps extends ObjProps {
     tags: Array<string>;
 }
 
-class GridObj extends Obj implements ObjProps, Hoverable {
+abstract class GridObj extends Obj implements ObjProps {
 
     tags: Array<string>;
 
@@ -11,19 +11,14 @@ class GridObj extends Obj implements ObjProps, Hoverable {
         this.tags = props.tags;
     }
 
-    putOnGrid(source: Source, destination: Destination) {
+    abstract onWatering?(source: Source): void;
 
-    }
-
-    draw(gx: number, gy: number, x: number, y: number) {
+    override draw(x: number, y: number, source: Source) {
         this.img.draw(x, y);
     }
 
     endOfTurn() {
         console.log(`${this.id}.endOfTurn() not defined.`);
-    }
-
-    onWatering(gx: number, gy: number) {
     }
 
     makeCard(): Card | null {

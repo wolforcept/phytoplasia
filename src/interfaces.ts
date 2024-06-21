@@ -31,7 +31,6 @@ interface Image {
 interface GridData {
     id: string | null;
     wasWatered?: boolean;
-    growTime?: number;
 }
 
 interface CardData {
@@ -46,6 +45,8 @@ interface GridPos {
 
 interface Source {
     data: any;
+    x: number;
+    y: number;
     location: Locationn;
 }
 
@@ -54,14 +55,26 @@ interface Destination {
     location: Locationn;
 }
 
-interface Hoverable {
-    drawDetails: (x: number, y: number) => void;
-    onSelect?: (source: Source) => void;
-    onUse?: (source: Source, destination: Destination) => void;
+// interface Hoverable {
+//     drawDetails: () => void;
+//     onSelect?: (source: Source) => void;
+//     // onUse?: (source: Source, destination: Destination) => void;
+//     onWatering?: (source: Source) => void;
+// }
+
+interface HoverData {
+    obj: Obj;
+    source: Source;
+}
+
+interface HoldData {
+    holdable: Holdable;
+    source: Source;
+    data: any;
 }
 
 interface Holdable {
-    inHandStep: (mouseEvents: MouseEvents, mx: number, my: number) => void
+    inHandStep: (holdData: HoldData, mouseEvents: MouseEvents, mx: number, my: number) => void
 }
 
 interface Data {
@@ -82,8 +95,8 @@ interface Data {
     objectiveVitamins: { [key in Vitamin]: number },
     currentVitamins: { [key in Vitamin]: number },
 
-    hoverData: { hoverable: Hoverable | null, data: any },
-    holdData: { holdable: Holdable | null, data: any },
+    hover: HoverData | null,
+    hold: HoldData | null,
 
     water: number,
     money: number,

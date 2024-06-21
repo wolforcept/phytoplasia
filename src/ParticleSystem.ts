@@ -6,9 +6,11 @@ interface Particle {
     ax?: number;
     ay?: number;
     life: number;
-    size: number;
+    size?: number;
     color: Color;
+    extraData?: any;
     compute?: (p: Particle) => void;
+    image?: any;
 }
 
 class ParticleSystem {
@@ -23,9 +25,17 @@ class ParticleSystem {
                 this.particles.splice(i, 1);
                 i--;
             } else {
-                p5.noStroke();
-                p5.fill(p5.color(particle.color.r, particle.color.g, particle.color.b, particle.color.a));
-                p5.square(particle.x, particle.y, particle.size);
+                if (particle.image) {
+                    p5.tint(p5.color(particle.color.r, particle.color.g, particle.color.b, particle.color.a));
+                    const w = 4 * particle.image.img.width * (particle.size ?? 1);
+                    const h = 4 * particle.image.img.height * (particle.size ?? 1);
+                    p5.image(particle.image.img, particle.x, particle.y, w, h);
+                    p5.noTint();
+                } else {
+                    p5.noStroke();
+                    p5.fill(p5.color(particle.color.r, particle.color.g, particle.color.b, particle.color.a));
+                    p5.square(particle.x, particle.y, particle.size ?? 4);
+                }
                 particle.life--;
                 particle.x += particle.vx;
                 particle.y += particle.vy;
