@@ -15,7 +15,10 @@ class Card extends Obj implements Holdable, CardProps {
     }
 
     public reduceStock(cardIndex: number) {
-        this.data.cards[cardIndex].stock--;
+        const card = this.data.cards[cardIndex];
+        card.stock--;
+        if (card.stock <= 0)
+            card.id = null;
     }
 
     public onUse(source: Source, destination: Destination): void {
@@ -27,12 +30,9 @@ class Card extends Obj implements Holdable, CardProps {
         this.img.draw(mx - 16, my - 64 - 16, 0);
         const hoverSource = this.data.hover?.source;
         if (mouseEvents.justReleased) {
-            if (hoverSource?.location === "grid" && this.canAfford()) {
+            if (hoverSource?.location === "grid" && this.data.grid[hoverSource.data.gx][hoverSource.data.gy].id === "dirt" && this.canAfford()) {
                 this.onUse(hold.source, hoverSource);
                 const data = this.data.cards[hold.source.data.cardIndex];
-                data.stock--;
-                if (data.stock <= 0)
-                    data.id = null;
             }
             this.data.hold = null;
         }
@@ -47,15 +47,11 @@ class Card extends Obj implements Holdable, CardProps {
     }
 
     override drawDetails(source: Source): void {
+        super.drawDetails(source);
         const data = this.data.cards[source.data.cardIndex];
         const cardTextX = 572;
         const cardTextY = 92;
-        const cardImageX = this.p.width - 64 - 16;
-        // const cardImageX = 720 + 60;
-        const cardImageY = 64;
-        this.img.draw(cardImageX, cardImageY, -1);
         this.p.text(this.name + "(x" + data.stock + ")", cardTextX, cardTextY);
-        this.drawDescription(cardTextX, cardTextY + 80, source);
     }
 
     override drawDescription(x: number, y: number, source: Source) {

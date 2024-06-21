@@ -35,7 +35,7 @@ class Obj implements ObjProps {
         const cardTextY = 92;
         const cardImageX = this.p.width - 64 - 16;
         // const cardImageX = 720 + 60;
-        const cardImageY = 64;
+        const cardImageY = 32;
         this.img.draw(cardImageX, cardImageY, -1);
         this.p.text(this.name, cardTextX, cardTextY);
         if (this.drawDescription)

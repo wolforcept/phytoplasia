@@ -44,7 +44,7 @@ var Obj = /** @class */ (function () {
         var cardTextY = 92;
         var cardImageX = this.p.width - 64 - 16;
         // const cardImageX = 720 + 60;
-        var cardImageY = 64;
+        var cardImageY = 32;
         this.img.draw(cardImageX, cardImageY, -1);
         this.p.text(this.name, cardTextX, cardTextY);
         if (this.drawDescription)
@@ -372,24 +372,24 @@ var sketch = function (p) {
     // allGridObjects.tomatoes = GridObjCooldownFruit.create("tomatoes", "Tomatoes", img.tomato, ["vegetable", "fruit"], 2, 2, { B: 2 }, 3, defaultProps);
     // allGridObjects.parsnip = GridObjCooldownFruit.create("parsnip", "Parsnip", img.parsnip, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
     // allGridObjects.cauliflower = GridObjCooldownFruit.create("cauliflower", "Cauliflower", img.cauliflower, ["vegetable"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.parsnip /*         */ = GridObjCooldownFruit.create("parsnip" /*          */, "Parsnip" /*          */, img.parsnip /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.cauliflower /*      */ = GridObjCooldownFruit.create("cauliflower" /*      */, "Cauliflower" /*      */, img.cauliflower /* */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.garlic /*           */ = GridObjCooldownFruit.create("garlic" /*           */, "Garlic" /*           */, img.garlic /*      */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.rhubarb /*         */ = GridObjCooldownFruit.create("rhubarb" /*         */, "Rhubarb " /*         */, img.rhubarb /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.tomato /*           */ = GridObjCooldownFruit.create("tomato" /*           */, "Tomato" /*           */, img.tomato /*      */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.hotpepper /*        */ = GridObjCooldownFruit.create("hotpepper" /*        */, "Hotpepper" /*        */, img.hotpepper /*   */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.raddish /*         */ = GridObjCooldownFruit.create("raddish" /*          */, "Raddish " /*         */, img.raddish /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.starfruit /*        */ = GridObjCooldownFruit.create("starfruit" /*        */, "Starfruit" /*        */, img.starfruit /*   */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.eggplant /*         */ = GridObjCooldownFruit.create("eggplant" /*         */, "Eggplant" /*         */, img.eggplant /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.pumpkin /*          */ = GridObjCooldownFruit.create("pumpkin" /*          */, "Pumpkin" /*          */, img.pumpkin /*     */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.yam /*              */ = GridObjCooldownFruit.create("yam" /*              */, "Yam" /*              */, img.yam /*         */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.beet /*             */ = GridObjCooldownFruit.create("beet" /*             */, "Beet" /*             */, img.beet /*        */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.ancientfruit /*     */ = GridObjCooldownFruit.create("ancientfruit" /*     */, "Ancientfruit" /*     */, img.ancientfruit /**/, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.tulip /*            */ = GridObjCooldownFruit.create("tulip" /*            */, "Tulip" /*            */, img.tulip /*       */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.poppy /*            */ = GridObjCooldownFruit.create("poppy" /*            */, "Poppy" /*            */, img.poppy /*       */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.sunflower /*        */ = GridObjCooldownFruit.create("sunflower" /*        */, "Sunflower" /*        */, img.sunflowwer /*  */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.sweetgem /*         */ = GridObjCooldownFruit.create("sweetgem" /*         */, "Sweetgem" /*         */, img.sweetgem /*    */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
-    allGridObjects.rice /*             */ = GridObjCooldownFruit.create("rice" /*             */, "Rice" /*             */, img.rice /*        */, ["root"], 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.parsnip /*         */ = GridObjCooldownFruit.create("parsnip" /*          */, "Parsnip" /*          */, img.parsnip /*    */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.cauliflower /*      */ = GridObjCooldownFruit.create("cauliflower" /*      */, "Cauliflower" /*      */, img.cauliflower /* */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.garlic /*           */ = GridObjCooldownFruit.create("garlic" /*           */, "Garlic" /*           */, img.garlic /*      */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.rhubarb /*         */ = GridObjCooldownFruit.create("rhubarb" /*         */, "Rhubarb " /*         */, img.rhubarb /*    */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tomato /*           */ = GridObjCooldownFruit.create("tomato" /*           */, "Tomato" /*           */, img.tomato /*      */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.hotpepper /*        */ = GridObjCooldownFruit.create("hotpepper" /*        */, "Hotpepper" /*        */, img.hotpepper /*   */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.raddish /*         */ = GridObjCooldownFruit.create("raddish" /*          */, "Raddish " /*         */, img.raddish /*    */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.starfruit /*        */ = GridObjCooldownFruit.create("starfruit" /*        */, "Starfruit" /*        */, img.starfruit /*   */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.eggplant /*         */ = GridObjCooldownFruit.create("eggplant" /*         */, "Eggplant" /*         */, img.eggplant /*    */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.pumpkin /*          */ = GridObjCooldownFruit.create("pumpkin" /*          */, "Pumpkin" /*          */, img.pumpkin /*     */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.yam /*              */ = GridObjCooldownFruit.create("yam" /*              */, "Yam" /*              */, img.yam /*         */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.beet /*             */ = GridObjCooldownFruit.create("beet" /*             */, "Beet" /*             */, img.beet /*        */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.ancientfruit /*     */ = GridObjCooldownFruit.create("ancientfruit" /*     */, "Ancientfruit" /*     */, img.ancientfruit /**/, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.tulip /*            */ = GridObjCooldownFruit.create("tulip" /*            */, "Tulip" /*            */, img.tulip /*       */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.poppy /*            */ = GridObjCooldownFruit.create("poppy" /*            */, "Poppy" /*            */, img.poppy /*       */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.sunflower /*        */ = GridObjCooldownFruit.create("sunflower" /*        */, "Sunflower" /*        */, img.sunflowwer /*  */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.sweetgem /*         */ = GridObjCooldownFruit.create("sweetgem" /*         */, "Sweetgem" /*         */, img.sweetgem /*    */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
+    allGridObjects.rice /*             */ = GridObjCooldownFruit.create("rice" /*             */, "Rice" /*             */, img.rice /*        */, ["root"], 5, 2, 2, { B: 2 }, 3, defaultProps);
     Object.keys(allGridObjects).forEach(function (id) {
         var card = allGridObjects[id].makeCard();
         if (card)
@@ -398,6 +398,14 @@ var sketch = function (p) {
     // const everything = { ...allCards, ...allGridObjects, ...allTools, ...allSeasons, ...allVitamins, ...allWeathers };
     allTools.wateringCan = new ToolWateringCan(__assign({ id: "wateringCan", name: "Watering Can", img: img.wateringCan }, defaultProps));
     function endTurn() {
+        for (var gx = 0; gx < gridSize; gx++)
+            for (var gy = 0; gy < gridSize; gy++) {
+                var source = { location: "grid", data: { gx: gx, gy: gy }, x: 0, y: 0 };
+                var gridData = grid[gx][gy];
+                if (gridData.id)
+                    allGridObjects[gridData.id].onEndTurn(source, gridData);
+                gridData.wasWatered = false;
+            }
         data.water = MAX_WATER;
         data.timeLeft--;
         if (data.timeLeft === 0) {
@@ -679,7 +687,7 @@ var sketch = function (p) {
             p.fill(0, 0, 0);
             p.text(textOrig, moneyX - p.textWidth(textOrig) - 4, moneyY + 32);
         }
-        { // NEXT OBJECTIVES
+        { // OBJECTIVES
             if (!data.hover && !customInHover) {
                 var objectivesX = 572;
                 var objectivesY_1 = 92;
@@ -694,10 +702,10 @@ var sketch = function (p) {
                     var vitamin = allVitamins[x];
                     vitamin.img.draw(dx_1, dy_1);
                     dy_1 += vitamin.img.w + 8;
-                    p.text("x" + o, dx_1 + 36, dy_1 - 16);
+                    p.text(currentVitamins[x] + "/" + o, dx_1 + 36, dy_1 - 16);
                     if (i == Math.floor(vals_1.length / 2)) {
                         dy_1 = objectivesY_1 + 44;
-                        dx_1 += 120;
+                        dx_1 += 4 * 40;
                     }
                 });
             }
@@ -772,7 +780,10 @@ var Card = /** @class */ (function (_super) {
         return _this;
     }
     Card.prototype.reduceStock = function (cardIndex) {
-        this.data.cards[cardIndex].stock--;
+        var card = this.data.cards[cardIndex];
+        card.stock--;
+        if (card.stock <= 0)
+            card.id = null;
     };
     Card.prototype.onUse = function (source, destination) {
     };
@@ -782,12 +793,9 @@ var Card = /** @class */ (function (_super) {
         this.img.draw(mx - 16, my - 64 - 16, 0);
         var hoverSource = (_a = this.data.hover) === null || _a === void 0 ? void 0 : _a.source;
         if (mouseEvents.justReleased) {
-            if ((hoverSource === null || hoverSource === void 0 ? void 0 : hoverSource.location) === "grid" && this.canAfford()) {
+            if ((hoverSource === null || hoverSource === void 0 ? void 0 : hoverSource.location) === "grid" && this.data.grid[hoverSource.data.gx][hoverSource.data.gy].id === "dirt" && this.canAfford()) {
                 this.onUse(hold.source, hoverSource);
                 var data = this.data.cards[hold.source.data.cardIndex];
-                data.stock--;
-                if (data.stock <= 0)
-                    data.id = null;
             }
             this.data.hold = null;
         }
@@ -799,15 +807,11 @@ var Card = /** @class */ (function (_super) {
         this.img.draw(x, y, 0);
     };
     Card.prototype.drawDetails = function (source) {
+        _super.prototype.drawDetails.call(this, source);
         var data = this.data.cards[source.data.cardIndex];
         var cardTextX = 572;
         var cardTextY = 92;
-        var cardImageX = this.p.width - 64 - 16;
-        // const cardImageX = 720 + 60;
-        var cardImageY = 64;
-        this.img.draw(cardImageX, cardImageY, -1);
         this.p.text(this.name + "(x" + data.stock + ")", cardTextX, cardTextY);
-        this.drawDescription(cardTextX, cardTextY + 80, source);
     };
     Card.prototype.drawDescription = function (x, y, source) {
         if (this.relatedGridObj && this.relatedGridObj.drawDescription)
@@ -872,8 +876,7 @@ var GridObj = /** @class */ (function (_super) {
     GridObj.prototype.draw = function (x, y, source) {
         this.img.draw(x, y);
     };
-    GridObj.prototype.endOfTurn = function () {
-        console.log("".concat(this.id, ".endOfTurn() not defined."));
+    GridObj.prototype.onEndTurn = function (source, gridData) {
     };
     GridObj.prototype.makeCard = function () {
         return null;
@@ -893,6 +896,7 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
     __extends(GridObjCooldownFruit, _super);
     function GridObjCooldownFruit(props) {
         var _this = _super.call(this, props) || this;
+        _this.stages = props.stages;
         _this.growTime = props.growTime;
         _this.produces = props.produces;
         _this.cooldown = props.cooldown;
@@ -910,7 +914,7 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
             costs: this.costs
         });
         card.draw = function (x, y, source) {
-            _this.img.draw(x, y - 64, -1);
+            _this.img.draw(x, y - 64, 0);
         };
         card.onUse = function (source, destination) {
             _this.putOnGrid(source, destination);
@@ -918,13 +922,14 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
         return card;
     };
     GridObjCooldownFruit.prototype.draw = function (x, y, source) {
-        if (this.data.grid[source.data.gx][source.data.gy].wasWatered)
+        var gridData = this.data.grid[source.data.gx][source.data.gy];
+        if (gridData.wasWatered)
             this.data.img.wetDirt.draw(x, y);
-        this.img.draw(x, y - 64, 0);
+        this.img.draw(x, y - 64, gridData.stage);
     };
     GridObjCooldownFruit.prototype.putOnGrid = function (source, destination) {
         var _a = destination.data, gx = _a.gx, gy = _a.gy;
-        this.data.grid[gx][gy] = { id: this.id, growTime: this.growTime, stage: 0 };
+        this.data.grid[gx][gy] = { id: this.id, growTime: this.growTime, stage: 1 };
         var cardIndex = source.data.cardIndex;
         var cardId = this.data.cards[cardIndex].id;
         if (cardId)
@@ -940,7 +945,8 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
         this.p.largeText();
         this.p.fill(0, 0, 0);
         dy += 64;
-        this.p.text("Every ".concat(this.cooldown, " turns:"), x, dy);
+        this.p.text("Provides nutrients\nevery turn when\ngrown and watered.", x, dy);
+        dy += 64;
         VITAMIN_VALUES.filter(function (x) { return _this.produces[x]; }).forEach(function (v) {
             var text = "+".concat(_this.produces[v]);
             _this.p.text(text, x, dy + 32);
@@ -954,7 +960,20 @@ var GridObjCooldownFruit = /** @class */ (function (_super) {
             gridObjData.wasWatered = true;
         }
     };
-    GridObjCooldownFruit.create = function (id, name, img, tags, cost, growTime, produces, cooldown, defaultProps) { return new GridObjCooldownFruit(__assign({ id: id, name: name, img: img, costs: { money: cost }, growTime: growTime, produces: produces, cooldown: cooldown, tags: tags }, defaultProps)); };
+    GridObjCooldownFruit.prototype.onEndTurn = function (source, _gridData) {
+        var _this = this;
+        var gridData = _gridData;
+        if (gridData.wasWatered) {
+            if (gridData.stage < this.stages)
+                gridData.stage++;
+            if (gridData.stage === this.stages)
+                VITAMIN_VALUES.filter(function (x) { return _this.produces[x]; }).forEach(function (v) {
+                    var _a;
+                    _this.data.currentVitamins[v] += (_a = _this.produces[v]) !== null && _a !== void 0 ? _a : 0;
+                });
+        }
+    };
+    GridObjCooldownFruit.create = function (id, name, img, tags, stages, cost, growTime, produces, cooldown, defaultProps) { return new GridObjCooldownFruit(__assign({ id: id, name: name, img: img, stages: stages, costs: { money: cost }, growTime: growTime, produces: produces, cooldown: cooldown, tags: tags }, defaultProps)); };
     return GridObjCooldownFruit;
 }(GridObjCard));
 var GridObjDirt = /** @class */ (function (_super) {
@@ -999,7 +1018,7 @@ var ToolWateringCan = /** @class */ (function (_super) {
         if (mouseEvents.justPressed)
             holdData.pressTime = Date.now();
         var diff = (Date.now() - holdData.pressTime);
-        if (mouseEvents.justReleased && diff < 100)
+        if (mouseEvents.justReleased && diff < 150)
             this.release();
         var dx = mx - this.img.w / 2;
         var dy = my - this.img.h / 2;

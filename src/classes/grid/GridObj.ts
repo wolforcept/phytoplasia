@@ -17,8 +17,7 @@ abstract class GridObj extends Obj implements ObjProps {
         this.img.draw(x, y);
     }
 
-    endOfTurn() {
-        console.log(`${this.id}.endOfTurn() not defined.`);
+    onEndTurn(source: Source, gridData: GridData) {
     }
 
     makeCard(): Card | null {

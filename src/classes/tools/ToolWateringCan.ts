@@ -10,7 +10,7 @@ class ToolWateringCan extends Tool {
 
         const diff = (Date.now() - holdData.pressTime);
 
-        if (mouseEvents.justReleased && diff < 100)
+        if (mouseEvents.justReleased && diff < 150)
             this.release();
 
         const dx = mx - this.img.w / 2;
