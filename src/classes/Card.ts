@@ -32,6 +32,7 @@ class Card extends Obj implements Holdable, CardProps {
         if (mouseEvents.justReleased) {
             if (hoverSource?.location === "grid" && this.data.grid[hoverSource.data.gx][hoverSource.data.gy].id === "dirt" && this.canAfford()) {
                 this.onUse(hold.source, hoverSource);
+                this.executeCosts();
                 const data = this.data.cards[hold.source.data.cardIndex];
             }
             this.data.hold = null;
@@ -51,7 +52,7 @@ class Card extends Obj implements Holdable, CardProps {
         const data = this.data.cards[source.data.cardIndex];
         const cardTextX = 572;
         const cardTextY = 92;
-        this.p.text(this.name + "(x" + data.stock + ")", cardTextX, cardTextY);
+        this.p.text(this.name + " (x" + data.stock + ")", cardTextX, cardTextY);
     }
 
     override drawDescription(x: number, y: number, source: Source) {
@@ -60,10 +61,16 @@ class Card extends Obj implements Holdable, CardProps {
     }
 
     private canAfford() {
-        if (!this.costs.money || this.data.money >= this.costs.money) return true;
-        if (!this.costs.water || this.data.water >= this.costs.water) return true;
-        if (!this.costs.testOtherCosts || this.costs.testOtherCosts()) return true;
-        return false;
+        if (this.costs.money && this.data.money < this.costs.money) return false;
+        if (this.costs.water && this.data.water < this.costs.water) return false;
+        if (this.costs.otherCosts && !this.costs.otherCosts(false)) return false;
+        return true;
+    }
+
+    private executeCosts() {
+        if (this.costs.money) this.data.money -= this.costs.money;
+        if (this.costs.water) this.data.water -= this.costs.water;
+        if (this.costs.otherCosts) this.costs.otherCosts(true);
     }
 
 }

@@ -9,4 +9,5 @@ class GridObjRock extends GridObj {
     }
     
     onWatering: undefined;
+    onHarvest: undefined;
 }

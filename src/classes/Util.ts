@@ -31,8 +31,8 @@ function sfc32(a: number, b: number, c: number, d: number) {
 }
 
 // const seedgen = () => (Math.random() * 2 ** 32) >>> 0;
-const _seeds = [0.9675946905, 0.678694789, 0.664269702, 0.2598896];
-const seedgen = (i: number) => (_seeds[i] * 2 ** 32) >>> 0;
-const seeds = [seedgen(0), seedgen(1), seedgen(2), seedgen(3)]
-const getRand = sfc32(seeds[0], seeds[1], seeds[2], seeds[3]);
-for (let i = 0; i < 10; i++) console.log(getRand());
+// const _seeds = [0.9675946905, 0.678694789, 0.664269702, 0.2598896];
+// const seedgen = (i: number) => (_seeds[i] * 2 ** 32) >>> 0;
+// const seeds = [seedgen(0), seedgen(1), seedgen(2), seedgen(3)]
+// const getRand = sfc32(seeds[0], seeds[1], seeds[2], seeds[3]);
+// for (let i = 0; i < 10; i++) console.log(getRand());

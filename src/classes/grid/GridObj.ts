@@ -20,6 +20,8 @@ abstract class GridObj extends Obj implements ObjProps {
     onEndTurn(source: Source, gridData: GridData) {
     }
 
+    abstract onHarvest?(source: Source, destination: Destination, gridData: GridData): void;
+
     makeCard(): Card | null {
         return null;
     }

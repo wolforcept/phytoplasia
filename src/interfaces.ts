@@ -7,6 +7,7 @@ const SEASON_VALUES: Array<Season> = ["spring", "summer", "autumn", "winter"];
 const WEATHER_VALUES: Array<Weather> = ["sunny", "rain", "thunder", "windy", "snowy"];
 const LOCATION_VALUES: Array<Locationn> = ["cards", "grid", "tools"];
 const VITAMIN_VALUES: Array<Vitamin> = ["A", "B", "C", "D", "E", "K", "Iron", "Calcium"];
+const GAINS_VALUES: Array<Vitamin | "money"> = ["money", ...VITAMIN_VALUES];
 
 interface Color {
     r: number;
@@ -31,6 +32,10 @@ interface Image {
 interface GridData {
     id: string | null;
     wasWatered?: boolean;
+}
+
+interface ToolData {
+    id: string;
 }
 
 interface CardData {
@@ -80,16 +85,8 @@ interface Holdable {
 interface Data {
     img: { [key: string]: Image },
 
-    allSeasons: { [key in Season]: SeasonObj },
-    allWeathers: { [key in Weather]: WeatherObj },
-    allVitamins: { [key in Vitamin]: VitaminObj },
-
-    allCards: { [key: string]: Card },
-    allTools: { [key: string]: Tool },
-    allGridObjects: { [key: string]: GridObj },
-
-    gridSize: number,
     grid: Array<Array<GridData>>,
+    tools: Array<ToolData>,
     cards: Array<CardData>,
 
     objectiveVitamins: { [key in Vitamin]: number },

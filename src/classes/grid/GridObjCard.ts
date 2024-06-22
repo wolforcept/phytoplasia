@@ -1,8 +1,7 @@
 interface CardCost {
     water?: number;
     money?: number;
-    testOtherCosts?: () => boolean;
-    runOtherCosts?: () => void;
+    otherCosts?: (simulate: boolean) => boolean;
 }
 
 interface GridObjCardProps extends GridObjProps {

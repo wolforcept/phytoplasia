@@ -5,8 +5,9 @@ class GridObjWeeds extends GridObj {
     }
 
     drawDescription(x: number, y: number) {
-        this.p.text("Remove with\nsickle.", x, y);
+        this.p.text("Remove with\nscythe.", x, y);
     }
 
     onWatering: undefined;
+    onHarvest: undefined;
 }

@@ -9,5 +9,5 @@ class GridObjDirt extends GridObj {
     }
 
     onWatering: undefined;
-
+    onHarvest: undefined;
 }

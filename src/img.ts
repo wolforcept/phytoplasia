@@ -10,7 +10,9 @@ const img: any = {
     dirt: { path: 'assets/dirt.png' },
     wetDirt: { path: 'assets/wet_dirt.png' },
     coin: { path: 'assets/coin.png' },
+    smallCoin: { path: 'assets/smallCoin.png' },
 
+    sickle: { path: 'assets/tools/sickle.png' },
     wateringCan: { path: 'assets/tools/watering_can.png' },
     wateringCanHeld: { path: 'assets/tools/watering_can_held.png' },
 
@@ -49,6 +51,7 @@ const img: any = {
     turnip: { path: 'assets/vegetables/turnip.png' },
     potato: { path: 'assets/vegetables/potato.png' },
 
+    // carrot: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 0 * 32, n: 6 },
     parsnip: { path: 'assets/crops.png', /*       */ w: 16, h: 32, sx: 0, sy: 0 * 32, n: 6 },
     cauliflower: { path: 'assets/crops.png', /*   */ w: 16, h: 32, sx: 0, sy: 1 * 32, n: 7 },
     garlic: { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 2 * 32, n: 6 },
@@ -67,7 +70,14 @@ const img: any = {
     sunflower: { path: 'assets/crops.png', /*     */ w: 16, h: 32, sx: 0, sy: 15 * 32, n: 6 },
     sweetgem: { path: 'assets/crops.png', /*      */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 7 },
     rice: { path: 'assets/crops.png', /*          */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 6 },
-    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 16 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 17 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 18 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 19 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 20 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 21 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 22 * 32, n: 6 },
+    // : { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 23 * 32, n: 6 },
+    carrot: { path: 'assets/crops.png', /*        */ w: 16, h: 32, sx: 0, sy: 24 * 32, n: 6 },
 
     plant1: { path: 'assets/plants/1.png' },
     plant2: { path: 'assets/plants/2.png' },

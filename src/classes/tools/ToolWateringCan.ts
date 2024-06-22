@@ -18,7 +18,7 @@ class ToolWateringCan extends Tool {
 
         const hoverSource = hoverData?.source ?? null;
         const gridObjId = hoverSource && hoverSource.data.gx && hoverSource.data.gy ? this.data.grid[hoverSource.data.gx][hoverSource.data.gy]?.id : null;
-        const gridObj = gridObjId ? this.data.allGridObjects[gridObjId] : null;
+        const gridObj = gridObjId ? ALL_GRIDOBJS[gridObjId] : null;
         if (mouseEvents.clicking && gridObj?.onWatering && this.data.water > 0 && hoverSource?.location === "grid") {
 
             const tar = hoverSource.x + "," + hoverSource.y;
@@ -27,7 +27,7 @@ class ToolWateringCan extends Tool {
                 holdData.pressTime = Date.now();
 
             }
-            if (diff > 1000) {
+            if (diff > 750) {
                 holdData.pressTime = Date.now();
                 gridObj.onWatering(hoverSource);
             }
