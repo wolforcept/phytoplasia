@@ -1180,7 +1180,6 @@ var ToolSickle = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ToolSickle.prototype.inHandStep = function (hold, mouseEvents, mx, my) {
-        var _this = this;
         var dx = mx - this.img.w / 2 + 52;
         var dy = my - this.img.h / 2 + 32;
         if (!hold.data.rot)
@@ -1191,26 +1190,27 @@ var ToolSickle = /** @class */ (function (_super) {
         this.p.rotate(hold.data.rot / 10);
         this.p.translate(-dx, -dy);
         if (mouseEvents.justReleased) {
-            if (!this.data.hover || !this.data.hover.obj || this.data.hover.source.location !== "grid") {
+            if (!this.data.hover || !this.data.hover.obj || this.data.hover.source.location !== "grid")
                 this.release();
-            }
-            else {
-                var harvest = function () {
-                    var hoverData = _this.data.hover;
-                    if (!hoverData || !hoverData.obj || hoverData.source.location !== "grid")
-                        return;
-                    var gridObj = hoverData.obj;
-                    if (!gridObj.onHarvest)
-                        return;
-                    var gx = hoverData.source.data.gx;
-                    var gy = hoverData.source.data.gy;
-                    gridObj.onHarvest(hold.source, { location: "grid", data: { gx: gx, gy: gy } }, _this.data.grid[gx][gy]);
-                };
-                this.harvestMotion(hold, dx, dy, harvest);
-            }
+            else
+                this.harvestMotion(hold, dx, dy);
+        }
+        if (hold.data.activateSickle) {
+            hold.data.activateSickle = false;
+            var hoverData = this.data.hover;
+            if (!hoverData || !hoverData.obj || hoverData.source.location !== "grid")
+                return;
+            var gridObj = hoverData.obj;
+            if (!gridObj.onHarvest)
+                return;
+            var gx = hoverData.source.data.gx;
+            var gy = hoverData.source.data.gy;
+            gridObj.onHarvest(hold.source, { location: "grid", data: { gx: gx, gy: gy } }, this.data.grid[gx][gy]);
         }
     };
-    ToolSickle.prototype.harvestMotion = function (hold, dx, dy, callback) {
+    ToolSickle.prototype.harvestMotion = function (hold, dx, dy) {
+        if (hold.data.stopDrawing)
+            return;
         hold.data.stopDrawing = true;
         var intervalId;
         var rot = 0;
@@ -1219,7 +1219,7 @@ var ToolSickle = /** @class */ (function (_super) {
             hold.data.rot = 10 * Math.sin(rot / 10);
             if (rot > 30) {
                 hold.data.stopDrawing = false;
-                callback();
+                hold.data.activateSickle = true;
                 clearInterval(intervalId);
             }
         }, 1000 / 60);
