@@ -3,6 +3,7 @@ const SAVE_NAME = "phytoplasia_save_1";
 interface SaveData {
     grid: Array<Array<GridData>>,
     cards: Array<CardData>,
+    tools: Array<ToolData>,
 
     objectiveVitamins: { [key in Vitamin]: number },
     currentVitamins: { [key in Vitamin]: number },
@@ -21,6 +22,7 @@ function save(data: Data) {
     let saveData: SaveData = {
         grid: data.grid,
         cards: data.cards,
+        tools: data.tools,
 
         objectiveVitamins: data.objectiveVitamins,
         currentVitamins: data.currentVitamins,

@@ -39,6 +39,7 @@ function save(data) {
     var saveData = {
         grid: data.grid,
         cards: data.cards,
+        tools: data.tools,
         objectiveVitamins: data.objectiveVitamins,
         currentVitamins: data.currentVitamins,
         water: data.water,
@@ -442,6 +443,8 @@ var sketch = function (p) {
                 if (Math.random() < .25)
                     gridData.wasWatered = false;
             }
+        if (data.water < MAX_WATER)
+            data.water++;
         data.timeLeft--;
         if (data.timeLeft === 0) {
             data.timeLeft = MAX_TIME;
@@ -523,10 +526,13 @@ var sketch = function (p) {
                     data.grid[dx][dy] = loadedData.grid[dx][dy];
             for (var index = 0; index < loadedData.cards.length; index++)
                 data.cards[index] = loadedData.cards[index];
+            for (var index = 0; index < loadedData.tools.length; index++)
+                data.tools[index] = loadedData.tools[index];
             data.currentSeason = loadedData.currentSeason;
             data.currentVitamins = loadedData.currentVitamins;
             data.currentWeather = loadedData.currentWeather;
-            data.cards;
+            data.water = loadedData.water;
+            data.money = loadedData.money;
         }
         else {
             var spots1 = [];
